@@ -7,9 +7,10 @@ int numCol = 8;
 int numPixel = numRow * numCol;
 
 float[] gdata = new float[numPixel];
+ColorMap cm = new ColorMap();
 
 void setup() {
-  size(200, 200);
+  size(600, 600);
   // Starts a myServer on port 2337
   myServer = new Server(this, 2337); 
   background(255);
@@ -27,12 +28,14 @@ void draw() {
         } 
       }
       
-      float size = 20;
+      float size = height/numRow;
       
       for(int i = 0; i < numCol; i++){
         for (int j = 0; j < numRow; j++){
           float colorVal = gdata[i*numRow + j];
-          fill(colorVal);
+          int[] rgb = cm.getColor((float) ((255-colorVal)/255.0));
+          fill(rgb[0], rgb[1], rgb[2]);
+          noStrokeI();
           rect(i*size, j*size, size-3, size-3);
           
         }
