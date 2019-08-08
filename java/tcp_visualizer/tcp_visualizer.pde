@@ -35,7 +35,7 @@ void draw() {
           float colorVal = gdata[i*numRow + j];
           int[] rgb = cm.getColor((float) ((255-colorVal)/255.0));
           fill(rgb[0], rgb[1], rgb[2]);
-          noStrokeI();
+          noStroke();
           rect(i*size, j*size, size-3, size-3);
           
         }
