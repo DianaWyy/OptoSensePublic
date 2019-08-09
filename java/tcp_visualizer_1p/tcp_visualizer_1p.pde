@@ -12,6 +12,11 @@ int fpsCounter = 0;
 String fpsIndicator = "";
 long lastTime = -1;
 
+// for rolling graph
+int current;
+float inByte;
+int[] yValues;
+int w;
 
 
 void setup() {
@@ -20,10 +25,16 @@ void setup() {
   myServer = new Server(this, 2337); 
   background(255);
   lastTime = millis();
+  
+  // for rolling graph
+  w = width-10;
+  strokeWeight(3);
+  yValues = new int[w];
+  smooth();
 }
 
 void draw() {
-  background(255);
+  
   
   Client thisClient = myServer.available();
 
@@ -37,24 +48,40 @@ void draw() {
         } 
       }
       
+      background(255);
+      
       float size = height/numRow;
       
-      for (int j = 0; j < numRow; j++){
-        for(int i = 0; i < numCol; i++){
-            float colorVal = gdata[i*numRow + j];
-            int[] rgb = cm.getColor((float) ((255-colorVal)/255.0));
-            fill(rgb[0], rgb[1], rgb[2]);
-            noStroke();
-            rect(i*size, j*size, size-3, size-3);
-            //break; //show only the first row (since we only have one diode)
-        }
-        //break;
-      }
+      float colorVal = gdata[0];
+      int[] rgb = cm.getColor((float) ((255-colorVal)/255.0));
+      fill(rgb[0], rgb[1], rgb[2]);
+      noStroke();
+      rect(0,0, size-3, size-3);
+      
+      current = (int) gdata[0];
       
       // show FPS
       fill(0);
       textSize(20);
-      text("FPS: "+fpsIndicator, 20, 20);
+      text("FPS: "+fpsIndicator, width - 100, 20);
+      
+      // for rolling graph
+      for(int i = 1; i < w; i++) {
+        yValues[i-1] = yValues[i];
+      }
+      
+      yValues[w-1] = current;
+      
+      stroke(255, 200, 0);
+      line(w, current, width, current);
+      strokeWeight(1);
+      line(0, current, width, current);
+      strokeWeight(3);
+      
+      for(int i=1; i<w; i++) {
+        stroke(0);
+        point(i, yValues[i]);
+      }
 }
 
 void calculateFPS(){
