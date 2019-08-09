@@ -8,12 +8,17 @@ int numPixel = numRow * numCol;
 
 float[] gdata = new float[numPixel];
 ColorMap cm = new ColorMap();
+int fpsCounter = 0;
+String fpsIndicator = "";
+long lastTime = -1;
+
 
 void setup() {
   size(600, 600);
   // Starts a myServer on port 2337
   myServer = new Server(this, 2337); 
   background(255);
+  lastTime = millis();
 }
 
 void draw() {
@@ -22,6 +27,10 @@ void draw() {
   Client thisClient = myServer.available();
      
       if (thisClient != null) {
+        
+        calculateFPS();
+        
+        
         String whatClientSaid = thisClient.readString();
         if (whatClientSaid != null) {
           processData(whatClientSaid);
@@ -40,7 +49,23 @@ void draw() {
           
         }
       }
-  
+      
+      // show FPS
+      fill(0);
+      textSize(20);
+      text("FPS: "+fpsIndicator, 20, 20);
+}
+
+void calculateFPS(){
+  // calculate frames per second
+  long currentTime = millis();
+  if(currentTime - lastTime > 1000){
+    lastTime = currentTime;
+    fpsIndicator = "" + fpsCounter;
+    fpsCounter = 0;
+  }else{
+    fpsCounter++;
+  }
 }
 
 void processData(String resultString){
