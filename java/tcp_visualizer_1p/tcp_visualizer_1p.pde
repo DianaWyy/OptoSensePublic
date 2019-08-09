@@ -53,12 +53,12 @@ void draw() {
       float size = height/numRow;
       
       float colorVal = gdata[0];
-      int[] rgb = cm.getColor((float) ((255-colorVal)/255.0));
+      int[] rgb = cm.getColor((float) ((colorVal)/255.0));
       fill(rgb[0], rgb[1], rgb[2]);
       noStroke();
       rect(0,0, size-3, size-3);
       
-      current = (int) gdata[0];
+      current = (int) (255 - gdata[0]);
       
       // show FPS
       fill(0);
