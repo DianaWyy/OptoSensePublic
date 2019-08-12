@@ -25,6 +25,10 @@ int timeThreshold = 1000; // 1s
 // for detection results
 String stateString = "";
 
+// for saving measurements
+Table table;
+float measurements [] = new float [8];
+
 void setup() {
   size(700, 700);
   // Starts a myServer on port 2337
@@ -37,6 +41,11 @@ void setup() {
   strokeWeight(3);
   yValues = new int[w];
   smooth();
+  
+  table = new Table();
+  for(int i = 0; i < 8; i++){
+    table.addColumn("position_" + i);
+  }
 }
 
 void draw() {
@@ -108,6 +117,7 @@ void draw() {
 }
 
 void keyPressed(){
+ // adjust threshold 
   if(key == CODED){
    if(keyCode == UP){
      brightnessThreshold += 5;
@@ -118,9 +128,28 @@ void keyPressed(){
    if(keyCode == LEFT){
      timeThreshold -= 100;
    }else if (keyCode == RIGHT){
-      timeThreshold += 100;
+     timeThreshold += 100;
    }
-   
+  }
+  
+  // press 0, 1, ..., 7 to save 8 measurements to a csv file
+  else if( key>= '0' && key <= '7'){ 
+    int index = Integer.parseInt(key+"");
+    measurements[index] = gdata[0];
+    
+    for(int i = 0; i < measurements.length; i++){
+      print(measurements[i]);
+      print(' ');
+    }
+    println();
+    
+  }else if (key == 's'){
+    TableRow newRow = table.addRow();
+    for(int i = 0; i < 8; i++){
+       newRow.setFloat("position_"+i, measurements[i]); 
+    }
+    saveTable(table, "data/measurements.csv");
+    println("measurements saved into data/measurements.csv");
   }
   
 }
