@@ -7,20 +7,24 @@ int numCol = 8;
 int numPixel = numRow * numCol;
 
 float[] gdata = new float[numPixel];
+float currValue = 0;
+float currDirivative = 0;
+
 ColorMap cm = new ColorMap();
 int fpsCounter = 0;
 String fpsIndicator = "";
 long lastTime = -1;
+int countdownTimer = -1;
 
 // for rolling graph
-int current;
 float inByte;
 int[] yValues;
+int[] yDirivatives;
 int w;
 
 // for thresholds
-int brightnessThreshold = 255/2;
-int timeThreshold = 1000; // 1s
+int dirivativeThreshold = 50;
+int timeThreshold = 300; // 5s
 
 // for detection results
 String stateString = "";
@@ -40,6 +44,7 @@ void setup() {
   w = width-10;
   strokeWeight(3);
   yValues = new int[w];
+  yDirivatives = new int[w];
   smooth();
   
   table = new Table();
@@ -61,68 +66,96 @@ void draw() {
         } 
       }
       
-      // light brightness detection
+      // dirivative detection
       
-      if (gdata[0] > brightnessThreshold){
-        stateString = "Light On";
+      if (abs(currDirivative) > dirivativeThreshold ){
+        stateString = "In Use";
+        countdownTimer = timeThreshold; // refresh the countdown timer
+        
       }else{
-        stateString = "";
+        countdownTimer--;
+        if(countdownTimer <= 0){
+          stateString = "";
+        }
       }
       
-      background(255);
+      background(100);
       
       float size = height/numRow;
       
-      float colorVal = gdata[0];
-      int[] rgb = cm.getColor((float) ((colorVal)/255.0));
+      int[] rgb = cm.getColor((float) ((currValue)/255.0));
       fill(rgb[0], rgb[1], rgb[2]);
       noStroke();
       rect(0,0, size-3, size-3);
       
-      
-      
       // show FPS
-      fill(0);
+      fill(255);
       textSize(20);
       textAlign(LEFT);
-      text("FPS: "+fpsIndicator, width - 300, 20);
-      text("Brightness Threshold: "+brightnessThreshold, width - 300, 40);
-      text("Time Hysteresis: "+timeThreshold, width - 300, 60);
+      text("FPS: "+fpsIndicator, width - 250, 20);
+      text("Threshold: "+dirivativeThreshold, width - 250, 40);
+      text("Time Hysteresis: "+timeThreshold, width - 250, 60);
       
       // for rolling graph
       float yOffset = 100;
-      current = (int) (255 - gdata[0] + yOffset);
+      int currValueDraw = (int) (255 - currValue);
+      int currDirivativeDraw = (int) (-currDirivative);
       
+      // moving rolling buffer
+     
       for(int i = 1; i < w; i++) {
         yValues[i-1] = yValues[i];
+        yDirivatives[i-1] = yDirivatives[i];
       }
       
-      yValues[w-1] = current;
+      yValues[w-1] = currValueDraw;
+      yDirivatives[w-1] = currDirivativeDraw;
       
-      stroke(255, 200, 0);
-      line(w, current, width, current);
-      strokeWeight(1);
-      line(0, 255-brightnessThreshold+yOffset, width, 255-brightnessThreshold+yOffset);
+      // drawing rolling buffer for intensity
+      noStroke();
+      fill(150);
+      rect(0, yOffset, width, 255);
       strokeWeight(3);
-      
+      stroke(255);
       for(int i=1; i<w; i++) {
-        stroke(0);
-        point(i, yValues[i]);
+        line(i, yValues[i] + yOffset, i-1, yValues[i-1] + yOffset);
       }
+      fill(255);
+      text("Raw measurement:", 10, yOffset + 30);
+      
+      // drawing rolling buffer for dirivative
+      noStroke();
+      fill(150);
+      rect(0, yOffset + 300 , width, 255);
+      
+      // draw threshold
+      stroke(255, 200, 0);
+      strokeWeight(1);
+      line(0, dirivativeThreshold + yOffset + 300 + 255/2, width, dirivativeThreshold+yOffset + 300 + 255/2);
+      line(0, -dirivativeThreshold + yOffset + 300 + 255/2, width, -dirivativeThreshold+yOffset + 300 + 255/2);
+      strokeWeight(3);
+      stroke(30,144,255);
+      for(int i=1; i<w; i++) {
+        line(i, yDirivatives[i] + yOffset + 300 + 255/2, i-1, yDirivatives[i-1] + yOffset + 300 + 255/2);
+      }
+      
+      fill(255);
+      text("First dirivative:", 10, yOffset + 300+30);
       
       // show detection result
       textAlign(CENTER);
       textSize(80);
-      text(stateString, width/2, height - 200);
+      fill(255);
+      text(stateString, 250 , 80);
 }
 
 void keyPressed(){
  // adjust threshold 
   if(key == CODED){
    if(keyCode == UP){
-     brightnessThreshold += 5;
+     dirivativeThreshold+= 5;
    }else if (keyCode == DOWN){
-     brightnessThreshold -= 5;
+     dirivativeThreshold -= 5;
    }
    
    if(keyCode == LEFT){
@@ -135,7 +168,7 @@ void keyPressed(){
   // press 0, 1, ..., 7 to save 8 measurements to a csv file
   else if( key>= '0' && key <= '7'){ 
     int index = Integer.parseInt(key+"");
-    measurements[index] = gdata[0];
+    measurements[index] = currValue;
     
     for(int i = 0; i < measurements.length; i++){
       print(measurements[i]);
@@ -174,4 +207,7 @@ void processData(String resultString){
       for(int i = 0; i < data.length; i++){
         gdata[i] = Float.parseFloat(data[i]);
       }
+      
+      currDirivative = gdata[4] - currValue;
+      currValue = gdata[4];
 }
