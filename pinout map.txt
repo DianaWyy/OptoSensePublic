@@ -6,3 +6,4 @@ AIN4 -> P028
 AIN5 -> P029
 AIN6 -> P030
 AIN7 -> P031
+added the new line
