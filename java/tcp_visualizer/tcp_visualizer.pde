@@ -3,7 +3,7 @@ import processing.net.*;
 Server myServer;
 
 int numRow = 8;
-int numCol = 8;
+int numCol = 1;
 int numPixel = numRow * numCol;
 
 float[] gdata = new float[numPixel];
@@ -11,6 +11,11 @@ ColorMap cm = new ColorMap();
 int fpsCounter = 0;
 String fpsIndicator = "";
 long lastTime = -1;
+float maxV = 4095;
+
+// for saving measurements
+Table table;
+float measurements [] = new float [8];
 
 
 
@@ -20,6 +25,11 @@ void setup() {
   myServer = new Server(this, 2337); 
   background(255);
   lastTime = millis();
+  
+  table = new Table();
+  for(int i = 0; i < 8; i++){
+    table.addColumn("position_" + i);
+  }
 }
 
 void draw() {
@@ -42,7 +52,7 @@ void draw() {
       for (int j = 0; j < numRow; j++){
         for(int i = 0; i < numCol; i++){
             float colorVal = gdata[i*numRow + j];
-            int[] rgb = cm.getColor((float) ((255-colorVal)/255.0));
+            int[] rgb = cm.getColor((float) ((maxV-colorVal)/maxV));
             fill(rgb[0], rgb[1], rgb[2]);
             noStroke();
             rect(i*size, j*size, size-3, size-3);
@@ -76,5 +86,41 @@ void processData(String resultString){
       
       for(int i = 0; i < data.length; i++){
         gdata[i] = Float.parseFloat(data[i]);
+        //println(gdata[i]);
       }
+      reorg(gdata);
+      
+}
+
+void reorg(float[] gdata){
+  
+  float[] tdata = new float[8];
+  for(int i = 0; i < 8; i++){
+    tdata[i] = gdata[i];
+  }
+  
+  gdata[7] = tdata[4];
+   gdata[6] = tdata[5];
+    gdata[5] = tdata[6];
+     gdata[4] = tdata[7];
+  gdata[3] = tdata[0];
+   gdata[2] = tdata[1];
+    gdata[1] = tdata[2];
+     gdata[0] = tdata[3];
+}
+  
+void keyPressed(){
+  
+  if (key == 's'){
+    TableRow newRow = table.addRow();
+    for(int i = 0; i < 8; i++){
+       newRow.setFloat("position_"+i, gdata[i]); 
+       print(gdata[i]);
+       print(' ');
+    }
+    println();
+    saveTable(table, "data/measurements.csv");
+    println("measurements saved into data/measurements.csv");
+  }
+  
 }
