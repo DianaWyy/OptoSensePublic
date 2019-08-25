@@ -23,11 +23,12 @@ public abstract class FeatureCalcBase implements Serializable{
 	Instances dataset;	
 	List<String> classLabels;
 	
-	int nfeatures = 3; // TODO need to be the same length with curMeasurements in the main class
+	int nfeatures = -1; // TODO need to be the same length with curMeasurements in the main class
 	boolean isFirstInstance = true;
 
-	public FeatureCalcBase(List<String> classLabels) {
+	public FeatureCalcBase(List<String> classLabels, int nFeatures) {
 		this.classLabels = classLabels;
+		this.nfeatures = nFeatures;
 	}
 
 	protected abstract void calcFeatures(DataInstance data, ValueAdder out);

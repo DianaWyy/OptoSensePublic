@@ -22,7 +22,7 @@ import processing.core.PApplet;
 import processing.net.Client;
 import processing.net.Server;
 
-public class DiscreteClassification extends PApplet {
+public class LiquidClassification extends PApplet {
 	
 	Server myServer;
 
@@ -72,7 +72,7 @@ public class DiscreteClassification extends PApplet {
 	}
 	
 	public static void main(String[] args) {
-		PApplet.main(new String[] { "--location=0,0", DiscreteClassification.class.getName() });
+		PApplet.main(new String[] { "--location=0,0", LiquidClassification.class.getName() });
 	}
 	
 	public void settings(){
@@ -322,7 +322,7 @@ public class DiscreteClassification extends PApplet {
 					if(classifier == null){ // train
 						if(isCaptureInstance != true){
 							println("Start training ...");
-							classifier = new OptoSenseClassifier();
+							classifier = new OptoSenseClassifier(curMeasurements.length);
 							classifier.train(trainingData);
 						}
 						
@@ -331,7 +331,7 @@ public class DiscreteClassification extends PApplet {
 					}
 					break;
 				case ('s'):
-					String filename = "file.ser"; 
+					String filename = "liquid_file.ser"; 
 				
 			        // Serialization  
 			        try
@@ -359,7 +359,7 @@ public class DiscreteClassification extends PApplet {
 				case('l'):
 					classifier = null; 
 				
-					filename = "file.ser"; 
+					filename = "liquid_file.ser"; 
 				  
 			        // Deserialization 
 			        try

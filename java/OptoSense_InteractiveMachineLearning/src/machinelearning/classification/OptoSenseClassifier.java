@@ -19,16 +19,17 @@ public class OptoSenseClassifier implements Serializable{
     SMO classifier = null;
     Attribute classattr;
     Filter filter = new Normalize();
+    int nfeatures = -1;
 
-    public OptoSenseClassifier() {
-    	
+    public OptoSenseClassifier(int nFeatures) {
+    	this.nfeatures = nFeatures;
     }
 
     public void train(Map<String, List<DataInstance>> instances) {
     	
     	// generate instances based on the collected a hashmap of DataInstances  	
     	// pass on labels
-    	featureCalc = new OptoSenseFeatureCalc(new ArrayList<>(instances.keySet()));
+    	featureCalc = new OptoSenseFeatureCalc(new ArrayList<>(instances.keySet()), this.nfeatures);
     	
     	// pass on data
     	 List<DataInstance> trainingData = new ArrayList<>();

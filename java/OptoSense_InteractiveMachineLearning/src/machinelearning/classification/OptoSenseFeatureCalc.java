@@ -11,8 +11,8 @@ public class OptoSenseFeatureCalc extends FeatureCalcBase implements Serializabl
 	 */
 	private static final long serialVersionUID = 8667392485783922740L;
 
-	public OptoSenseFeatureCalc(List<String> classLabels) {
-		super(classLabels);
+	public OptoSenseFeatureCalc(List<String> classLabels, int nFeatures) {
+		super(classLabels, nFeatures);
 	}
 	
 	private static void addRawMeasurements(String prefix, float[] v, ValueAdder out) {
