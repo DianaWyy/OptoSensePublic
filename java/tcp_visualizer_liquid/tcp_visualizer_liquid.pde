@@ -18,7 +18,8 @@ Table table;
 float measurements [] = new float [8];
 float measurementsDraw[] = new float [8];
 
-
+// for liquid detection
+float minSlope = Float.MAX_VALUE;
 
 void setup() {
   size(600, 600);
@@ -72,11 +73,22 @@ void draw() {
         measurementsDraw[i] = map(gdata[i], 4096, 0, 0, height-20);
       }
       
+      minSlope = Float.MAX_VALUE;
+      
       for(int i = 1; i < 8; i++){
         stroke(0);
         strokeWeight(5);
         line(i*60 + 100, measurementsDraw[i], (i-1)*60 + 100, measurementsDraw[i-1]);
+        
+        float slope = gdata[i] - gdata[i-1];
+        
+        if(slope < minSlope){
+          minSlope = slope;
+        }
       }
+      
+      textSize(20);
+      text("Min Slope: "+minSlope, width/2, 20);
       
 }
 
