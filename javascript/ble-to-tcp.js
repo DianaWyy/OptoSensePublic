@@ -1,6 +1,6 @@
 'use strict'
 const noble = require('noble-mac')
-const TARGET_LOCAL_NAME = 'optoSense'
+const TARGET_LOCAL_NAME = 'optoSense-liquid'
 const net = require('net')
 const client = new net.Socket()
 var ready_to_write = false
