@@ -99,26 +99,26 @@ void draw() {
   if (counter > 30) {
     fill(255, 0, 0, 127);
     noStroke();
-    rect(840, 500, 840, 500);
+    rect(840, 700, 840, 300);
     fill(0);
-    textSize(30);
-    text("Please close the door.", 1100, 850);
+    textSize(32);
+    text("Please close the door.", 1075, 925);
   } else {
     fill(255);
     noStroke();
-    rect(840, 500, 840, 500);
+    rect(840, 700, 840, 300);
   }
   fill(0);
   textSize(50);
-  text("Opened For", 1100, 650);
-  text(counter + "s", 1100, 750);
+  text("Door Opened For", 1050, 800);
+  text(counter + "s", 1200, 875);
   
   // image display
   if (currValueDraw < rawThreshold) {
-      image(img_closed, 840, 0, 840, 500);
+      image(img_closed, 840, 0, 840, 700);
       counter = 0;
   }else {
-      image(img_opened, 840, 0, 840, 500);
+      image(img_opened, 840, 0, 840, 700);
       calculateSeconds();
   } 
   
