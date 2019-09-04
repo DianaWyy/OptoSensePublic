@@ -23,7 +23,7 @@ int[] yValues;
 int w;
 
 // for thresholds
-int rawThreshold = 200;
+int rawThreshold = 60;
 
 // for saving measurements
 Table table;
@@ -33,9 +33,13 @@ float measurements [] = new float [8];
 PImage img_closed;
 PImage img_opened;
 
+// flash counter
+int flashCount = 0;
+
 
 void setup() {
-  size(1680, 1000);
+  //size(1680, 1000);
+  fullScreen();
   // Starts a myServer on port 2337
   myServer = new Server(this, 2337); 
   
@@ -72,6 +76,13 @@ void draw() {
       
   background(255);
   
+  flashCount++;
+  
+  stroke(0);
+  strokeWeight(2);
+  line(width/2, 0, width/2, height);
+  line(0, height/2, width, height/2);
+  
   // 0D pixel
   int[] rgb = cm.getColor((float) ((currValue)/4096.0));
   fill(rgb[0], rgb[1], rgb[2]);
@@ -81,10 +92,10 @@ void draw() {
   // show raw measurements text
   fill(0);
   textSize(22);
-  text("Threshold: "+ rawThreshold, width/2 - 200, 520);
+  text("Threshold: "+ rawThreshold, width/2 - 175, height/2 + 400);
   
   // for rolling raw measurements
-  float yOffset = 550;
+  float yOffset = height/2 + 50;
   int currValueDraw = (int) (4096 - currValue);
   
   currValueDraw = (int)map(currValueDraw, 0, 4096, 0, 255);
@@ -97,48 +108,59 @@ void draw() {
   
   // counter for opened seconds
   if (counter > 30) {
-    fill(255, 0, 0, 127);
-    noStroke();
-    rect(840, 700, 840, 300);
+    int c = flashCount / 45;
+    if (c % 2 == 0) {
+      fill(255, 0, 0, 127);
+      noStroke();
+      rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
+    } else {
+      fill(255);
+      noStroke();
+      rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
+    }
     fill(0);
     textSize(32);
-    text("Please close the door.", 1075, 925);
+    text("Please close the door.", 1100, 825);
   } else {
     fill(255);
     noStroke();
-    rect(840, 700, 840, 300);
+    rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
   }
-  fill(0);
-  textSize(50);
-  text("Door Opened For", 1050, 800);
-  text(counter + "s", 1200, 875);
+  
   
   // image display
-  if (currValueDraw < rawThreshold) {
-      image(img_closed, 840, 0, 840, 700);
+  if (currValueDraw > (255 - rawThreshold)) {
+      image(img_closed, width/2 + 150, 0, 600, height/2 - 2);
       counter = 0;
+      fill(0);
+      textSize(50);
+      text("Door Closed", 1075, 700);
   }else {
-      image(img_opened, 840, 0, 840, 700);
+      image(img_opened, width/2 + 150, 0, 600, height/2 - 2);
       calculateSeconds();
+      fill(0);
+      textSize(50);
+      text("Door Opened For", 1075, 700);
+      text(counter + "s", 1225, 775);
   } 
   
   // drawing rolling buffer for intensity
   noStroke();
   fill(255);
-  rect(0, yOffset, width/2, height/2);
-  strokeWeight(3);
-  stroke(0);
+  rect(0, yOffset, width/2 - 2, 300);
   for(int i=1; i<w; i++) {
-        line(i, yValues[i] + yOffset, i-1, yValues[i-1] + yOffset);
+        fill(0);
+        rect(i, yOffset + 255, 1, yValues[i] - 255);
   }
   fill(0);
   textSize(22);
-  text("Raw measurement:", 10, yOffset + 30);
+  text("Raw measurement:", 10, yOffset - 20);
+  // text(currValueDraw, 10, yOffset + 70);
   
   // draw threshold
   stroke(255, 200, 0);
   strokeWeight(1);
-  line(0, -rawThreshold + yOffset + 300, width/2, -rawThreshold + yOffset + 300);
+  line(0, -rawThreshold + yOffset + 255, width/2, -rawThreshold + yOffset + 255);
   
 }
 
