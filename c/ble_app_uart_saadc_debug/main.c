@@ -113,7 +113,7 @@
 #define UART_RX_BUF_SIZE                256                                         /**< UART RX buffer size. */
 
 #define SAADC_SAMPLES_IN_BUFFER         8
-#define SAADC_SAMPLE_RATE		10                                          /**< SAADC sample rate in ms. */               
+#define SAADC_SAMPLE_RATE		5                                          /**< SAADC sample rate in ms. */               
 #define NUMBER_OF_ROWS                  8                                           /**< Number of rows for photodiodes. */
 
 static ble_nus_t            m_nus;                                      /**< Structure to identify the Nordic UART Service. */
