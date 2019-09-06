@@ -1,3 +1,6 @@
+/*
+ *  Similar to Matlab Jet color map
+ */
 public class ColorMap{
     public int rgb[] = new int[3];
     public ColorMap() {}
