@@ -150,7 +150,6 @@ void draw() {
          newRow.setFloat("position_"+i, measurements[i]); 
       }
       
-      float[] delta = new float [8];
       float maxDiff = 0;
       for(int i = 0; i < 8; i++) {
         delta[i] = measurements[i] - prevMeasurements[i];
