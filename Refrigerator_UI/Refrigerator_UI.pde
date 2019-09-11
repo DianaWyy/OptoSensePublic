@@ -120,7 +120,7 @@ void draw() {
     }
     fill(0);
     textSize(50);
-    text("Please close the door.", 1000, 930);
+    text("Please Close The Door", 1000, 930);
   } else {
     fill(255);
     noStroke();
@@ -152,12 +152,10 @@ void draw() {
   for(int i=1; i<w; i++) {
         fill(0);
         int y = (yValues[i] - 255) * 3;
-        if (y > 400) {
-          y = 400;
-          rect(i, yOffset + 255, 1, y);
-        } else {
-          rect(i, yOffset + 255, 1, y);
+        if (y < -255) {
+          y = -255;
         }
+        rect(i, yOffset + 255, 1, y);
   }
   fill(0);
   textSize(22);
