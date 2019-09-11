@@ -9,6 +9,7 @@ int numPixel = numRow * numCol;
 // data
 float[] gdata = new float[numPixel];
 float currValue = 0;
+float currDirivative = 0;
 
 // color for pixel
 ColorMap cm = new ColorMap();
@@ -20,6 +21,7 @@ int counter = 0;
 // for rolling graph
 float inByte;
 int[] yValues;
+int[] yDerivatives;
 int w;
 
 // for thresholds
@@ -62,6 +64,7 @@ void setup() {
   w = width/2 - 10;
   strokeWeight(3);
   yValues = new int[w];
+  yDerivatives = new int[w];
   smooth();
   
   //table
@@ -104,14 +107,17 @@ void draw() {
   // for rolling raw measurements
   float yOffset = height/2 + 50;
   int currValueDraw = (int) (4096 - currValue);
+  int currDirivativeDraw = (int) (-currDirivative);
   
   currValueDraw = (int)map(currValueDraw, 0, 4096, 0, 255);
   
   // moving rolling buffer
   for(int i = 1; i < w; i++) {
         yValues[i-1] = yValues[i];
+        yDerivatives[i-1] = yDerivatives[i];
   }
   yValues[w-1] = currValueDraw;
+  yDerivatives[w-1] = currDirivativeDraw;
   
   // counter for opened seconds
   if (counter > 15) {
@@ -164,11 +170,11 @@ void draw() {
   rect(0, yOffset, width/2 - 2, 300);
   for(int i=1; i<w; i++) {
         fill(0);
-        rect(i, yOffset + 255, 1, yValues[i] - 255);
+        rect(i, yOffset + 255, 1, yDerivatives[i] - 255);
   }
   fill(0);
   textSize(22);
-  text("Raw measurement:", 10, yOffset - 20);
+  text("First Derivative:", 10, yOffset - 20);
   // text(currValueDraw, 10, yOffset + 70);
   
   // draw threshold

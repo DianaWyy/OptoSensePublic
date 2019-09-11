@@ -35,7 +35,7 @@ float threshold = 0.2;
 //float differenceThreshold = 500; //Threshold of change
 //long frameThreshold = 300; //Threshold of periodic patterns
 String direction = "";
-long frameCounter = 0;
+int frameCounter = 0;
 long periodicCounter = 0;
 float pixel [] = new float [300];
 int pixelIndex = 0;
@@ -43,6 +43,7 @@ int period = 0;
 int searchFreq = 20;
 boolean firstPeak = false;
 
+boolean simulation = true;
 
 // for liquid detection
 float minSlope = Float.MAX_VALUE;
@@ -59,25 +60,16 @@ void setup() {
   background(255);
   lastTime = millis();
   
-  //Test
-  //table = loadTable("measurements.csv", "header");
-  //for (TableRow row : table.rows()) {
-  //  float data = row.getFloat("position_5");
-  //  pixel[pixelIndex] = data;
-  //  pixelIndex ++;
-  //  if(pixelIndex == searchFreq) {
-  //    findPeriod();
-  //    pixelIndex = 0;
-  //    println(period);
-  //  }
-  //}
-  
-  
-  table = new Table();
-  for(int i = 0; i < 8; i++){
-    table.addColumn("position_" + i);
-    maxMeasurements[i] = -1;
-    minMeasurements[i] = Float.MAX_VALUE;
+  //Simulation
+  if(simulation) {
+    frameRate(10);
+    table = loadTable("measurements_walking.csv", "header");  
+  }
+  else {
+    table = new Table();
+    for(int i = 0; i < 8; i++){
+      table.addColumn("position_" + i);
+    }
   }
   
 }
@@ -85,15 +77,23 @@ void setup() {
 void draw() {
   background(255);
   
-  Client thisClient = myServer.available();
-  if (thisClient != null) {
-    
-    calculateFPS();
-    
-    String whatClientSaid = thisClient.readString();
-    if (whatClientSaid != null) {
-      processData(whatClientSaid);
-    } 
+  if(simulation) {
+    TableRow row = table.getRow(frameCounter);
+    for(int i = 0; i < 8; i++){
+      gdata[i] = row.getFloat("position_" + i);
+    }
+  }
+  else {
+    Client thisClient = myServer.available();
+    if (thisClient != null) {
+      
+      calculateFPS();
+      
+      String whatClientSaid = thisClient.readString();
+      if (whatClientSaid != null) {
+        processData(whatClientSaid);
+      } 
+    }
   }
   
   float size = height/numRow;
@@ -140,14 +140,16 @@ void draw() {
   text("Min Slope: "+minSlope, width/2, 20);
   
   //Direction information
-  if(fpsCounter > 0){
+  if(fpsCounter > 0 || simulation){
     float difference = computeDistance(prevMeasurements, measurements, 8); // Euclidean distance between frames
     if(difference > 0) { //
       frameCounter++; //count valid frames
       
-      TableRow newRow = table.addRow();
-      for(int i = 0; i < 8; i++){
-         newRow.setFloat("position_"+i, measurements[i]); 
+      if(!simulation) {
+        TableRow newRow = table.addRow();
+        for(int i = 0; i < 8; i++){
+           newRow.setFloat("position_"+i, measurements[i]); 
+        }
       }
       
       float maxDiff = 0;
@@ -275,7 +277,7 @@ void reorg(float[] gdata){
   
 void keyPressed(){
   
-  if (key == 's'){
+  if (!simulation && key == 's'){
     TableRow newRow = table.addRow();
     for(int i = 0; i < 8; i++){
        newRow.setFloat("position_"+i, gdata[i]); 
