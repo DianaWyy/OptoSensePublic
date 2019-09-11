@@ -21,6 +21,9 @@ float measurementsDraw[] = new float [8];
 // for liquid detection
 float minSlope = Float.MAX_VALUE;
 
+// update cup
+String stateStr = "Nothing";
+
 void setup() {
   fullScreen();
   // Starts a myServer on port 2337
@@ -99,8 +102,14 @@ void draw() {
       text("Min Slope: "+minSlope, width/2 - 200, height/2 + 30);
       
       
+      // liquid percentage
+      textSize(25);
+      text("0%", width/2 + 250, 500);
+      textSize(40);
+      text(stateStr + " Detected", width/2 + 275, height/2 + 200);
       // cup
       fill(255); //white
+      stroke(0);
       strokeWeight(3);
       rect(width/2 + 300, 100, 325, 400);
       // handle
@@ -108,6 +117,7 @@ void draw() {
       strokeWeight(3);
       arc(width/2 + 628, 300, 200, 250, PI+HALF_PI, TWO_PI+HALF_PI, OPEN);
       arc(width/2 + 628, 299, 150, 180, PI+HALF_PI, TWO_PI+HALF_PI, OPEN);
+      
 }
 
 void calculateFPS(){
