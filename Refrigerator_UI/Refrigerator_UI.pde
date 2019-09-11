@@ -23,7 +23,7 @@ int[] yValues;
 int w;
 
 // for thresholds
-int rawThreshold = 60;
+int rawThreshold = 35;
 
 // for saving measurements
 Table table;
@@ -90,9 +90,9 @@ void draw() {
   rect(370, 200, 100, 100);
 
   // show raw measurements text
-  fill(0);
-  textSize(22);
-  text("Threshold: "+ rawThreshold, width/2 - 175, height/2 + 400);
+  //fill(0);
+  //textSize(22);
+  //text("Threshold: "+ rawThreshold, width/2 - 175, height/2 + 400);
   
   // for rolling raw measurements
   float yOffset = height/2 + 50;
@@ -119,8 +119,8 @@ void draw() {
       rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
     }
     fill(0);
-    textSize(32);
-    text("Please close the door.", 1100, 825);
+    textSize(50);
+    text("Please close the door.", 1000, 930);
   } else {
     fill(255);
     noStroke();
@@ -134,14 +134,15 @@ void draw() {
       counter = 0;
       fill(0);
       textSize(50);
-      text("Door Closed", 1075, 700);
-  }else {
+      text("Door Closed", 1120, 800);
+  } else {
       image(img_opened, width/2 + 150, 0, 600, height/2 - 2);
       calculateSeconds();
       fill(0);
       textSize(50);
-      text("Door Opened For", 1075, 700);
-      text(counter + "s", 1225, 775);
+      text("Door Open", 1120, 750);
+      textSize(70);
+      text(counter + "s", 1200, 850);
   } 
   
   // drawing rolling buffer for intensity
@@ -150,7 +151,13 @@ void draw() {
   rect(0, yOffset, width/2 - 2, 300);
   for(int i=1; i<w; i++) {
         fill(0);
-        rect(i, yOffset + 255, 1, yValues[i] - 255);
+        int y = (yValues[i] - 255) * 3;
+        if (y > 400) {
+          y = 400;
+          rect(i, yOffset + 255, 1, y);
+        } else {
+          rect(i, yOffset + 255, 1, y);
+        }
   }
   fill(0);
   textSize(22);
@@ -160,7 +167,7 @@ void draw() {
   // draw threshold
   stroke(255, 200, 0);
   strokeWeight(1);
-  line(0, -rawThreshold + yOffset + 255, width/2, -rawThreshold + yOffset + 255);
+  line(0, 3 * (-rawThreshold) + yOffset + 255, width/2, 3 * (-rawThreshold) + yOffset + 255);
   
 }
 
@@ -175,16 +182,16 @@ void calculateSeconds() {
 
 void keyPressed(){
  // adjust threshold 
-  if(key == CODED){
-   if(keyCode == UP){
-     rawThreshold+= 5;
-   }else if (keyCode == DOWN){
-     rawThreshold -= 5;
-   }
-  }
+  //if(key == CODED){
+  // if(keyCode == UP){
+  //   rawThreshold+= 5;
+  // }else if (keyCode == DOWN){
+  //   rawThreshold -= 5;
+  // }
+  //}
   
   // press 0, 1, ..., 7 to save 8 measurements to a csv file
-  else if( key>= '0' && key <= '7'){ 
+  if( key>= '0' && key <= '7'){ 
     int index = Integer.parseInt(key+"");
     measurements[index] = currValue;
     
