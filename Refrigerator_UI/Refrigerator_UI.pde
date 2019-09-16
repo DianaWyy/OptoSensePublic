@@ -158,8 +158,8 @@ void draw() {
         rect(i, yOffset + 255, 1, y);
   }
   fill(0);
-  textSize(22);
-  text("Raw measurement:", 10, yOffset - 20);
+  textSize(35);
+  text("Raw measurement:", 10, yOffset - 13);
   // text(currValueDraw, 10, yOffset + 70);
   
   // draw threshold
