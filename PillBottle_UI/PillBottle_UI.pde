@@ -168,7 +168,7 @@ void draw() {
   }else {
       image(img_opened, width/2 + 2, 0, width / 2 - 2, height/2 - 2);
       calculateSeconds();
-      int c = flashCount / 45;
+      float c = counter;
       strokeWeight(3);
       if (c == 1) {
         line(1505, 835, 1510, 840);
