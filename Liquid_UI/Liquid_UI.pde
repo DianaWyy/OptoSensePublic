@@ -212,8 +212,8 @@ void draw() {
 
 
       // liquid percentage
-      textSize(25);
-      text("0%", width/2 + 250, 500);
+      //textSize(25);
+      //text("0%", width/2 + 250, 500);
       textSize(40);
       text(stateStr + " Detected", width/2 + 275, height/2 + 270);
 
@@ -233,10 +233,12 @@ void draw() {
         fill(139,69,19);
       } else if (stateStr == "Tea") {
         fill(205,133,63);
-      } 
+      } else {
+        fill(220,20,60);
+      }
       stroke(0);
       strokeWeight(3);
-      liquid_cup = 300 - level * (300/8);
+      liquid_cup = 400 - level * (400/8);
       rect(width/2 + 300, 500, 325, -liquid_cup);
       
 }
