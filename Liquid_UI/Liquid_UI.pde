@@ -1,4 +1,5 @@
 import processing.net.*;
+import papaya.*;
 
 Server myServer;
 
@@ -10,19 +11,35 @@ float[] gdata = new float[numPixel];
 ColorMap cm = new ColorMap();
 int fpsCounter = 0;
 String fpsIndicator = "";
+int fps = 0;
 long lastTime = -1;
 float maxV = 4095;
+float maxPeriod = 100;
 
 // for saving measurements
 Table table;
 float measurements [] = new float [8];
 float measurementsDraw[] = new float [8];
+float prevMeasurements[] = new float [8];
+float gradient[] = new float [8];
+float thresholds [] = {0.1, 0.5, 0.7};
+String liquids [] = {"Tea", "Juice", "Coffee"};
+String  display = "";
+float level = 0;
+int frameCounter = 0;
+
+// liquid in cup
+float liquid_cup = 0;
 
 // for liquid detection
 float minSlope = Float.MAX_VALUE;
 
 // update cup
 String stateStr = "Nothing";
+
+// simulation mode
+boolean simulation = true;
+
 
 void setup() {
   fullScreen();
@@ -33,9 +50,16 @@ void setup() {
   background(255);
   lastTime = millis();
   
-  table = new Table();
-  for(int i = 0; i < 8; i++){
-    table.addColumn("position_" + i);
+  //Simulation
+  if(simulation) {
+    frameRate(10);
+    table = loadTable("measurements_dr_pepper_01.csv", "header");  
+  }
+  else {
+    table = new Table();
+    for(int i = 0; i < 8; i++){
+      table.addColumn("position_" + i);
+    }
   }
 }
 
@@ -48,17 +72,24 @@ void draw() {
   line(width/2, 0, width/2, height);
   line(0, height/2, width, height/2);
   
-  Client thisClient = myServer.available();
-
-      if (thisClient != null) {
-        
-        calculateFPS();
-        
-        String whatClientSaid = thisClient.readString();
-        if (whatClientSaid != null) {
-          processData(whatClientSaid);
-        } 
-      }
+    if(simulation) {
+    TableRow row = table.getRow(frameCounter);
+    for(int i = 0; i < 8; i++){
+      gdata[i] = row.getFloat("position_" + i);
+    }
+  }
+  else {
+    Client thisClient = myServer.available();
+    if (thisClient != null) {
+      
+      calculateFPS();
+      
+      String whatClientSaid = thisClient.readString();
+      if (whatClientSaid != null) {
+        processData(whatClientSaid);
+      } 
+    }
+  }
       
       float size = (height/2)/numRow;
       
@@ -81,7 +112,9 @@ void draw() {
    
       
       for(int i = 0; i < 8; i++){
-        measurementsDraw[i] = map(gdata[i], 4096, 0, 0, height-20);
+       measurements[i] = gdata[i];
+       //measurementsDraw[i] = map(prevDelta[i], 4096, -4096, 0, height-20);
+       measurementsDraw[i] = map(gdata[i], 4096, 0, 0, height-20);
       }
       
       minSlope = Float.MAX_VALUE;
@@ -89,7 +122,7 @@ void draw() {
       for(int i = 1; i < 8; i++){
         stroke(0);
         strokeWeight(5);
-        line(i*60 + 100, measurementsDraw[i], (i-1)*60 + 100, measurementsDraw[i-1]);
+        rect(i*60 + 100, measurementsDraw[i] + height/2, -60, measurementsDraw[i-1] - measurementsDraw[i] + height/2);
         
         float slope = gdata[i] - gdata[i-1];
         
@@ -101,12 +134,86 @@ void draw() {
       textSize(20);
       text("Min Slope: "+minSlope, width/2 - 200, height/2 + 30);
       
+      //Liquid
+  if(fpsCounter > 0 || simulation){
+    float difference = computeDistance(prevMeasurements, measurements, 8); // Euclidean distance between frames
+    if(difference > 0) { //
+      frameCounter++; //count valid frames
       
+      if(!simulation) {
+        TableRow newRow = table.addRow();
+        for(int i = 0; i < 8; i++){
+           newRow.setFloat("position_"+i, measurements[i]); 
+        }
+      }
+      
+      float maximum = -1;
+      float secondMaximum = -1;
+      int indexMaximum = -1;
+      int indexSecond = -1;
+      for(int i = 0; i < numRow - 1; i++) {
+        gradient[i] = abs(measurements[i + 1] - measurements[i]);
+        if(gradient[i] > maximum){
+          secondMaximum = maximum;
+          indexSecond = indexMaximum;
+          maximum = gradient[i];
+          indexMaximum = i;
+        } 
+        else if(gradient[i] > secondMaximum) {
+          secondMaximum = gradient[i];
+          indexSecond = i;
+        }
+      }
+      level = indexMaximum + 1; //the higher pixel of maximum gradient 
+      int indexBefore = indexMaximum;
+      int indexAfter = indexSecond;
+      if(indexBefore > indexAfter) {
+        indexBefore = indexSecond;
+        indexAfter = indexMaximum;
+      }
+      float beforeAvg = 0;
+      float afterAvg = 0;
+      int count = 0;
+      for(int i = 0; i < indexBefore + 1; i++) {
+        beforeAvg += measurements[i];
+        count++;
+      }
+      beforeAvg /= count;
+      count = 0;
+      for(int i = indexAfter + 1; i < numRow; i++) {
+        afterAvg += measurements[i];
+        count++;
+      }
+      afterAvg /= count;
+      float activation = abs(afterAvg - beforeAvg) / beforeAvg;
+      int index = -1;
+      String liquid = "";
+      for(int i = 0; i < thresholds.length; i++){
+        if(activation > thresholds[i]){
+          liquid = liquids[i];
+          index = i;
+        }
+      }
+      println(activation);
+      if(index > -1 && level < 8) {//Has liquid
+        display = liquid + " Level: " + level;
+        
+        noStroke();
+        rect(size, level*size, size-3, 3);
+      }
+      else
+        display = "No liquid detected";
+    }
+  }
+  textSize(25);
+  text(display, width/2 + 20, 40);
+
+
       // liquid percentage
       textSize(25);
       text("0%", width/2 + 250, 500);
       textSize(40);
-      text(stateStr + " Detected", width/2 + 275, height/2 + 200);
+      text(stateStr + " Detected", width/2 + 275, height/2 + 270);
       // cup
       fill(255); //white
       stroke(0);
@@ -117,14 +224,27 @@ void draw() {
       strokeWeight(3);
       arc(width/2 + 628, 300, 200, 250, PI+HALF_PI, TWO_PI+HALF_PI, OPEN);
       arc(width/2 + 628, 299, 150, 180, PI+HALF_PI, TWO_PI+HALF_PI, OPEN);
+      // display liquid level
+      //if (liquid == "coffee") {
+      //  fill(139,69,19);
+      //} else if (liquid == "tea") {
+      //  fill(205,133,63);
+      //} 
+      stroke(0);
+      strokeWeight(3);
+      liquid_cup = 300 - level * (300/8);
+      rect(width/2 + 300, 500, 325, -liquid_cup);
       
 }
+
+
 
 void calculateFPS(){
   // calculate frames per second
   long currentTime = millis();
   if(currentTime - lastTime > 1000){
     lastTime = currentTime;
+    fps = fpsCounter;
     fpsIndicator = "" + fpsCounter;
     fpsCounter = 0;
   }else{
@@ -164,7 +284,7 @@ void reorg(float[] gdata){
   
 void keyPressed(){
   
-  if (key == 's'){
+  if (!simulation && key == 's'){
     TableRow newRow = table.addRow();
     for(int i = 0; i < 8; i++){
        newRow.setFloat("position_"+i, gdata[i]); 
@@ -175,5 +295,30 @@ void keyPressed(){
     saveTable(table, "data/measurements.csv");
     println("measurements saved into data/measurements.csv");
   }
+  if (key == 'r'){
+    reset();
+    println("Reset");
+  }
   
+}
+
+float computeDistance(float[] inputPrev, float[] inputCur, int len) {
+  float[][] data = new float[2][len];
+  for(int i = 0; i < len; i++){
+     data[0][i] = inputPrev[i];
+     data[1][i] = inputCur[i];
+  }
+  float[][] distance = Distance.euclidean(data); 
+  return distance[0][1];
+}
+void reset() {
+  for(int i = 0; i < 8; i++){
+    measurements[i] = 0;
+    measurementsDraw[i] = 0;
+    prevMeasurements[i] = 0;
+    gradient[i] = 0;
+  }
+  display = "";
+  level = 0;
+  frameCounter = 0;
 }
