@@ -134,6 +134,7 @@ void draw() {
       textSize(20);
       text("Min Slope: "+minSlope, width/2 - 200, height/2 + 30);
       
+      
       //Liquid
   if(fpsCounter > 0 || simulation){
     float difference = computeDistance(prevMeasurements, measurements, 8); // Euclidean distance between frames
@@ -191,6 +192,7 @@ void draw() {
       for(int i = 0; i < thresholds.length; i++){
         if(activation > thresholds[i]){
           liquid = liquids[i];
+          stateStr = liquid;
           index = i;
         }
       }
@@ -214,6 +216,7 @@ void draw() {
       text("0%", width/2 + 250, 500);
       textSize(40);
       text(stateStr + " Detected", width/2 + 275, height/2 + 270);
+
       // cup
       fill(255); //white
       stroke(0);
@@ -224,12 +227,13 @@ void draw() {
       strokeWeight(3);
       arc(width/2 + 628, 300, 200, 250, PI+HALF_PI, TWO_PI+HALF_PI, OPEN);
       arc(width/2 + 628, 299, 150, 180, PI+HALF_PI, TWO_PI+HALF_PI, OPEN);
+      
       // display liquid level
-      //if (liquid == "coffee") {
-      //  fill(139,69,19);
-      //} else if (liquid == "tea") {
-      //  fill(205,133,63);
-      //} 
+      if (stateStr == "Coffee") {
+        fill(139,69,19);
+      } else if (stateStr == "Tea") {
+        fill(205,133,63);
+      } 
       stroke(0);
       strokeWeight(3);
       liquid_cup = 300 - level * (300/8);
