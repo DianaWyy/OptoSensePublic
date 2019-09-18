@@ -216,7 +216,7 @@ void draw() {
   rect(0, yOffset, width/2 - 2, 300);
   for(int i=1; i<w; i++) {
         fill(0);
-        int y = (yDerivatives[i] - 255) * 3;
+        int y = (yDerivatives[i] - 255) * 2;
         if (y < -255) {
           y = -255;
         }
@@ -238,7 +238,7 @@ void draw() {
 
 void calculateSeconds() {
   long currentTime = millis();
-  if(currentTime - operationTime > 1000){
+  if(currentTime - operationTime > 100){
     operationTime = currentTime;
     counter ++;
   }
