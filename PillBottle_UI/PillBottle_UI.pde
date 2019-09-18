@@ -273,6 +273,9 @@ void keyPressed(){
     }
     saveTable(table, "data/measurements.csv");
     println("measurements saved into data/measurements.csv");
+  } else if (key == 'r'){
+    reset();
+    println("Reset");
   }
 }
 // Process data method
@@ -287,4 +290,28 @@ void processData(String resultString) {
       
       currDerivative = gdata[4] - currValue;
       currValue = gdata[4];
+}
+
+void reset() {
+  for(int i = 0; i < 8; i++){
+    measurements[i] = 0;
+  }
+  
+  operationTime = millis();
+  
+  // for rolling graph
+  w = width/2 - 10;
+  strokeWeight(3);
+  yValues = new int[w];
+  yDerivatives = new int[w];
+  smooth();
+  // tick
+  showTick = false;
+  //counter
+  counter = 0;
+  //table
+  table = new Table();
+  for(int i = 0; i < 8; i++){
+    table.addColumn("position_" + i);
+  }
 }
