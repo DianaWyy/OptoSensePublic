@@ -45,7 +45,7 @@ boolean showTick = false;
 int pillCount = 0;
 float currDerivative = 0;
 float formerDerivative = 0;
-int derivativeThreshold = 200;
+int derivativeThreshold = 100;
 
 void setup() {
   //size(1680, 1000);
@@ -169,7 +169,7 @@ void draw() {
       image(img_opened, width/2 + 2, 0, width / 2 - 2, height/2 - 2);
       calculateSeconds();
       float c = counter;
-      strokeWeight(3);
+      strokeWeight(5);
       if (c == 1) {
         line(1505, 835, 1510, 840);
       } else if (c == 2) {
@@ -201,6 +201,7 @@ void draw() {
   
   // show tick
   if (showTick == true) {
+    strokeWeight(5);
     line(1505, 835, 1525, 855);
     line(1525, 855, 1545, 815);
     // check if last pill taken was one day ago
