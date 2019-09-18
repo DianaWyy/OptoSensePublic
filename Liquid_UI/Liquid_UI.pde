@@ -52,7 +52,7 @@ void setup() {
   
   //Simulation
   if(simulation) {
-    frameRate(10);
+    frameRate(5);
     table = loadTable("measurements_dr_pepper_01.csv", "header");  
   }
   else {
@@ -106,9 +106,9 @@ void draw() {
       }
       
       // show FPS
-      fill(0);
-      textSize(20);
-      text("FPS: "+fpsIndicator, 20, height/2 + 30);
+      //fill(0);
+      //textSize(20);
+      //text("FPS: "+fpsIndicator, 20, height/2 + 30);
    
       
       for(int i = 0; i < 8; i++){
@@ -120,8 +120,9 @@ void draw() {
       minSlope = Float.MAX_VALUE;
       
       for(int i = 1; i < 8; i++){
-        stroke(0);
+        stroke(255);
         strokeWeight(5);
+        fill(0);
         rect(i*60 + 100, measurementsDraw[i] + height/2, -60, measurementsDraw[i-1] - measurementsDraw[i] + height/2);
         
         float slope = gdata[i] - gdata[i-1];
@@ -131,8 +132,8 @@ void draw() {
         }
       }
       
-      textSize(20);
-      text("Min Slope: "+minSlope, width/2 - 200, height/2 + 30);
+      //textSize(20);
+      //text("Min Slope: "+minSlope, width/2 - 200, height/2 + 30);
       
       
       //Liquid
@@ -198,10 +199,14 @@ void draw() {
       }
       println(activation);
       if(index > -1 && level < 8) {//Has liquid
-        display = liquid + " Level: " + level;
+        String levelVolume = (int)(8-level) * 100 + "ml";
+        display = liquid + " Level: " + levelVolume;
         
         noStroke();
         rect(size, level*size, size-3, 3);
+        fill(0);
+        textSize(25);
+        text("Liquid Level", size * 2 + 10, level * size + 10);
       }
       else
         display = "No liquid detected";
@@ -232,9 +237,9 @@ void draw() {
       if (stateStr == "Coffee") {
         fill(139,69,19);
       } else if (stateStr == "Tea") {
-        fill(205,133,63);
+        fill(85,107,47);
       } else {
-        fill(220,20,60);
+        fill(255,165,0);
       }
       stroke(0);
       strokeWeight(3);
