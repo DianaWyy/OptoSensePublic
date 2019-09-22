@@ -1,4 +1,3 @@
-import processing.net.*;
 import papaya.*;
 
 Server myServer;
@@ -48,17 +47,13 @@ boolean simulation = true;
 // for liquid detection
 float minSlope = Float.MAX_VALUE;
 
-// walking man
-PImage imgRight;
-PImage imgLeft;
-
 void setup() {
   ////Test
   //float testPrev[] = {2.0f, 3.0f, 5.0f, 4.0f};
   //float testCur[] = {1.0f, 2.0f, 3.0f, 5.0f};
   //println(isMovingRight(testPrev, testCur, 4));
   
-  fullScreen();
+  size(600, 600);
   // Starts a myServer on port 2337
   myServer = new Server(this, 2337); 
   background(255);
@@ -76,9 +71,6 @@ void setup() {
     }
   }
   
-   // image
-  imgRight = loadImage("right.jpg");
-  imgLeft = loadImage("left.jpg");
 }
 
 void draw() {
@@ -103,7 +95,7 @@ void draw() {
     }
   }
   
-  float size = width/2/numRow;
+  float size = height/numRow;
   
   for (int j = 0; j < numRow; j++){
     for(int i = 0; i < numCol; i++){
@@ -111,40 +103,31 @@ void draw() {
         int[] rgb = cm.getColor((float) ((maxV-colorVal)/maxV));
         fill(rgb[0], rgb[1], rgb[2]);
         noStroke();
-        rect(j*size, 220 + i*size, size-3, size-3);
+        rect(i*size, j*size, size-3, size-3);
         //break; //show only the first row (since we only have one diode)
     }
     //break;
   }
   
-  //fill(255);
-  //circle(400, 275, 250);
-  
   // show FPS
-  //fill(0);
-  //textSize(20);
-  //text("FPS: "+fpsIndicator, 20, 20);
+  fill(0);
+  textSize(20);
+  text("FPS: "+fpsIndicator, 20, 20);
  
-  // Draw grid lines
-  stroke(0);
-  strokeWeight(2);
-  line(width/2, 0, width/2, height);
-  line(0, height/2, width, height/2);
   
   for(int i = 0; i < 8; i++){
     measurements[i] = gdata[i];
     //measurementsDraw[i] = map(prevDelta[i], 4096, -4096, 0, height-20);
-    measurementsDraw[i] = map(gdata[i], 4096, 0, 0, height/2-20);
+    measurementsDraw[i] = map(gdata[i], 4096, 0, 0, height-20);
   }
   
   minSlope = Float.MAX_VALUE;
   
   for(int i = 1; i < 8; i++){
-    stroke(255);
+    stroke(0);
     strokeWeight(5);
-    fill(0);
-    rect(i*60 + 175, measurementsDraw[i] + height/2 + 20, -60, measurementsDraw[i-1] - measurementsDraw[i] + height/2 + 20);
- 
+    line(i*60 + 100, measurementsDraw[i], (i-1)*60 + 100, measurementsDraw[i-1]);
+    
     float slope = gdata[i] - gdata[i-1];
     
     if(slope < minSlope){
@@ -152,8 +135,8 @@ void draw() {
     }
   }
   
-  //textSize(20);
-  //text("Min Slope: "+minSlope, width/2, 20);
+  textSize(20);
+  text("Min Slope: "+minSlope, width/2, 20);
   
   //Direction information
   if(fpsCounter > 0 || simulation){
@@ -229,13 +212,11 @@ void draw() {
       float[] leftOrRight = movingLeftOrRight(prevMeasurements, measurements, 8);
       float movingLeft = leftOrRight[0] - leftOrRight[1];
       println(movingLeft);
-      image(imgRight, width/2 + 250, 20, 275, height/2 - 25);
-      if(movingLeft > threshold) {
+      if(movingLeft > threshold)
         direction = "Left";
-      } else if(movingLeft < -1 * threshold){
+      else if(movingLeft < -1 * threshold){
         if(direction == "Left")
           periodicCounter++;
-          image(imgLeft, width/2 + 250, 20, 300, height/2 - 25);
         direction = "Right";
       }
       for(int i = 0; i < 8; i++) {
@@ -246,12 +227,8 @@ void draw() {
       //prevDifference = difference; 
     }
   }
-  String display = direction + " Count: " + periodicCounter;
-  //+ " Freq: " + float(fps) / float(period) + "";
-  fill(0);
-  textSize(45);
-  text(display, width/2 + 270, height/2 + 275);
-  
+  String display = direction + " Count: " + periodicCounter + " Freq: " + float(fps) / float(period) + "";
+  text(display, width/2, height - 30);
 }
 
 void calculateFPS(){

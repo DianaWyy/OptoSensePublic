@@ -35,7 +35,7 @@ float threshold = 0.2;
 //float differenceThreshold = 500; //Threshold of change
 //long frameThreshold = 300; //Threshold of periodic patterns
 String direction = "";
-int frameCounter = 0;
+long frameCounter = 0;
 long periodicCounter = 0;
 float pixel [] = new float [300];
 int pixelIndex = 0;
@@ -43,19 +43,14 @@ int period = 0;
 int searchFreq = 20;
 boolean firstPeak = false;
 
-boolean simulation = true;
 
 // for liquid detection
 float minSlope = Float.MAX_VALUE;
 
-// walking man
-PImage imgRight;
-PImage imgLeft;
-
 void setup() {
   ////Test
-  //float testPrev[] = {2.0f, 3.0f, 5.0f, 4.0f};
-  //float testCur[] = {1.0f, 2.0f, 3.0f, 5.0f};
+  float testPrev[] = {2.0f, 3.0f, 5.0f, 4.0f};
+  float testCur[] = {1.0f, 2.0f, 3.0f, 5.0f};
   //println(isMovingRight(testPrev, testCur, 4));
   
   fullScreen();
@@ -64,68 +59,66 @@ void setup() {
   background(255);
   lastTime = millis();
   
-  //Simulation
-  if(simulation) {
-    frameRate(10);
-    table = loadTable("measurements_walking.csv", "header");  
-  }
-  else {
-    table = new Table();
-    for(int i = 0; i < 8; i++){
-      table.addColumn("position_" + i);
+  //Test
+  table = loadTable("measurements.csv", "header");
+  for (TableRow row : table.rows()) {
+    float data = row.getFloat("position_5");
+    pixel[pixelIndex] = data;
+    pixelIndex ++;
+    if(pixelIndex == searchFreq) {
+      findPeriod();
+      pixelIndex = 0;
+      println(period);
     }
   }
   
-   // image
-  imgRight = loadImage("right.jpg");
-  imgLeft = loadImage("left.jpg");
+  
+  table = new Table();
+  for(int i = 0; i < 8; i++){
+    table.addColumn("position_" + i);
+    maxMeasurements[i] = -1;
+    minMeasurements[i] = Float.MAX_VALUE;
+  }
+  
 }
 
 void draw() {
   background(255);
   
-  if(simulation) {
-    TableRow row = table.getRow(frameCounter);
-    for(int i = 0; i < 8; i++){
-      gdata[i] = row.getFloat("position_" + i);
-    }
-  }
-  else {
-    Client thisClient = myServer.available();
-    if (thisClient != null) {
-      
-      calculateFPS();
-      
-      String whatClientSaid = thisClient.readString();
-      if (whatClientSaid != null) {
-        processData(whatClientSaid);
-      } 
-    }
+  Client thisClient = myServer.available();
+  if (thisClient != null) {
+    
+    calculateFPS();
+    
+    String whatClientSaid = thisClient.readString();
+    if (whatClientSaid != null) {
+      processData(whatClientSaid);
+    } 
   }
   
-  float size = width/2/numRow;
+  float size = 0;
   
   for (int j = 0; j < numRow; j++){
     for(int i = 0; i < numCol; i++){
         float colorVal = gdata[i*numRow + j];
         int[] rgb = cm.getColor((float) ((maxV-colorVal)/maxV));
         fill(rgb[0], rgb[1], rgb[2]);
-        noStroke();
-        rect(j*size, 220 + i*size, size-3, size-3);
+        stroke(255);
+        arc(400, 275, 450, 450, size, size + QUARTER_PI, PIE);
+        size += QUARTER_PI;
         //break; //show only the first row (since we only have one diode)
     }
     //break;
   }
   
-  //fill(255);
-  //circle(400, 275, 250);
+  fill(255);
+  circle(400, 275, 250);
   
   // show FPS
   //fill(0);
   //textSize(20);
   //text("FPS: "+fpsIndicator, 20, 20);
- 
-  // Draw grid lines
+  
   stroke(0);
   strokeWeight(2);
   line(width/2, 0, width/2, height);
@@ -134,17 +127,16 @@ void draw() {
   for(int i = 0; i < 8; i++){
     measurements[i] = gdata[i];
     //measurementsDraw[i] = map(prevDelta[i], 4096, -4096, 0, height-20);
-    measurementsDraw[i] = map(gdata[i], 4096, 0, 0, height/2-20);
+    measurementsDraw[i] = map(gdata[i], 4096, 0, 0, height-20);
   }
   
   minSlope = Float.MAX_VALUE;
   
   for(int i = 1; i < 8; i++){
-    stroke(255);
+    stroke(0);
     strokeWeight(5);
-    fill(0);
-    rect(i*60 + 175, measurementsDraw[i] + height/2 + 20, -60, measurementsDraw[i-1] - measurementsDraw[i] + height/2 + 20);
- 
+    line(i*60 + 200, measurementsDraw[i], (i-1)*60 + 200, measurementsDraw[i-1]);
+    
     float slope = gdata[i] - gdata[i-1];
     
     if(slope < minSlope){
@@ -152,20 +144,18 @@ void draw() {
     }
   }
   
-  //textSize(20);
-  //text("Min Slope: "+minSlope, width/2, 20);
+  textSize(20);
+  text("Min Slope: "+minSlope, width/2, 20);
   
   //Direction information
-  if(fpsCounter > 0 || simulation){
+  if(fpsCounter > 0){
     float difference = computeDistance(prevMeasurements, measurements, 8); // Euclidean distance between frames
     if(difference > 0) { //
       frameCounter++; //count valid frames
       
-      if(!simulation) {
-        TableRow newRow = table.addRow();
-        for(int i = 0; i < 8; i++){
-           newRow.setFloat("position_"+i, measurements[i]); 
-        }
+      TableRow newRow = table.addRow();
+      for(int i = 0; i < 8; i++){
+         newRow.setFloat("position_"+i, measurements[i]); 
       }
       
       float maxDiff = 0;
@@ -229,13 +219,11 @@ void draw() {
       float[] leftOrRight = movingLeftOrRight(prevMeasurements, measurements, 8);
       float movingLeft = leftOrRight[0] - leftOrRight[1];
       println(movingLeft);
-      image(imgRight, width/2 + 250, 20, 275, height/2 - 25);
-      if(movingLeft > threshold) {
+      if(movingLeft > threshold)
         direction = "Left";
-      } else if(movingLeft < -1 * threshold){
+      else if(movingLeft < -1 * threshold){
         if(direction == "Left")
           periodicCounter++;
-          image(imgLeft, width/2 + 250, 20, 300, height/2 - 25);
         direction = "Right";
       }
       for(int i = 0; i < 8; i++) {
@@ -246,12 +234,8 @@ void draw() {
       //prevDifference = difference; 
     }
   }
-  String display = direction + " Count: " + periodicCounter;
-  //+ " Freq: " + float(fps) / float(period) + "";
-  fill(0);
-  textSize(45);
-  text(display, width/2 + 270, height/2 + 275);
-  
+  String display = direction + " Count: " + periodicCounter + " Freq: " + float(fps) / float(period) + "";
+  text(display, width/2, height - 30);
 }
 
 void calculateFPS(){
@@ -299,7 +283,7 @@ void reorg(float[] gdata){
   
 void keyPressed(){
   
-  if (!simulation && key == 's'){
+  if (key == 's'){
     TableRow newRow = table.addRow();
     for(int i = 0; i < 8; i++){
        newRow.setFloat("position_"+i, gdata[i]); 
