@@ -250,8 +250,8 @@ void draw() {
   String display = direction + " Count: " + periodicCounter;
   //+ " Freq: " + float(fps) / float(period) + "";
   fill(0);
-  textSize(40);
-  text(display, width/2 + 275, height/2 + 275);
+  textSize(45);
+  text(display, width/2 + 270, height/2 + 275);
   
 }
 
