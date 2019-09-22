@@ -22,12 +22,11 @@ float measurements [] = new float [8];
 float measurementsDraw[] = new float [8];
 float prevMeasurements[] = new float [8];
 float gradient[] = new float [8];
-float thresholds [] = {0.1, 0.5, 0.7};
+float thresholds [] = {0.2, 0.5, 0.7};
 String liquids [] = {"Tea", "Juice", "Coffee"};
 String  display = "";
 float level = 0;
 int frameCounter = 0;
-
 
 boolean simulation = true;
 
@@ -48,7 +47,7 @@ void setup() {
   
   //Simulation
   if(simulation) {
-    frameRate(10);
+    frameRate(5);
     table = loadTable("measurements_oolong_01.csv", "header");  
   }
   else {
