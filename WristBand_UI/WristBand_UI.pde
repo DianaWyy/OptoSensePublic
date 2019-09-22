@@ -48,6 +48,10 @@ boolean simulation = true;
 // for liquid detection
 float minSlope = Float.MAX_VALUE;
 
+// walking man
+PImage imgStand;
+PImage imgWalk;
+
 void setup() {
   ////Test
   //float testPrev[] = {2.0f, 3.0f, 5.0f, 4.0f};
@@ -72,6 +76,9 @@ void setup() {
     }
   }
   
+   // image
+  imgStand = loadImage("stand.jpg");
+  imgWalk = loadImage("walk.jpg");
 }
 
 void draw() {
@@ -136,8 +143,9 @@ void draw() {
   for(int i = 1; i < 8; i++){
     stroke(0);
     strokeWeight(5);
-    line(i*60 + 200, measurementsDraw[i] + height/2 + 50, (i-1)*60 + 200, measurementsDraw[i-1] + height/2 + 50);
-    
+    fill(0);
+    rect(i*60 + 175, measurementsDraw[i] + height/2 + 20, -60, measurementsDraw[i-1] - measurementsDraw[i] + height/2 + 20);
+ 
     float slope = gdata[i] - gdata[i-1];
     
     if(slope < minSlope){
@@ -145,8 +153,8 @@ void draw() {
     }
   }
   
-  textSize(20);
-  text("Min Slope: "+minSlope, width/2, 20);
+  //textSize(20);
+  //text("Min Slope: "+minSlope, width/2, 20);
   
   //Direction information
   if(fpsCounter > 0 || simulation){
@@ -219,6 +227,7 @@ void draw() {
       //      keyFrameIndex = -1; //reset keyFrame
       //    }
       //  }
+      image(imgStand, width/2 + 150, 20, 500, height/2 - 25);
       float[] leftOrRight = movingLeftOrRight(prevMeasurements, measurements, 8);
       float movingLeft = leftOrRight[0] - leftOrRight[1];
       println(movingLeft);
@@ -227,6 +236,7 @@ void draw() {
       else if(movingLeft < -1 * threshold){
         if(direction == "Left")
           periodicCounter++;
+          image(imgWalk, width/2 + 150, 20, 500, height/2 - 25);
         direction = "Right";
       }
       for(int i = 0; i < 8; i++) {
@@ -237,8 +247,12 @@ void draw() {
       //prevDifference = difference; 
     }
   }
-  String display = direction + " Count: " + periodicCounter + " Freq: " + float(fps) / float(period) + "";
-  text(display, width/2, height - 30);
+  String display = direction + " Count: " + periodicCounter;
+  //+ " Freq: " + float(fps) / float(period) + "";
+  fill(0);
+  textSize(40);
+  text(display, width/2 + 275, height/2 + 275);
+  
 }
 
 void calculateFPS(){
