@@ -165,12 +165,12 @@ void draw() {
   
   if ((int)map(currValueDraw, 0, 4096, 0, 255) > (255 - rawThreshold)) {
       image(img_closed, width/2 + 225, 125, 250, 375);
-      textSize(50);
+      textSize(60);
       fill(0);
       text("Lid Close", 1150, 785);
   }else {
       image(img_opened, width/2 + 2, 0, width / 2 - 2, height/2 - 2);
-      textSize(50);
+      textSize(60);
       fill(0);
       text("Lid Open", 1150, 785);
       //calculateSeconds();
