@@ -112,7 +112,7 @@ void draw() {
   float yOffset = height/2 + 50;
   int currValueDraw = (int) (4096 - currValue);
   int currDerivativeDraw = (int) (-currDerivative);
-  currDerivativeDraw = (int)map(currValueDraw, 0, 4096, 0, 255);
+  currDerivativeDraw = (int)map(currDerivativeDraw, 0, 4096, 0, 255);
   
   // moving rolling buffer
   for(int i = 1; i < w; i++) {
