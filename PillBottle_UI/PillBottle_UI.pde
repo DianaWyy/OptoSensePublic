@@ -58,11 +58,11 @@ void setup() {
   operationTime = millis();
   
   // image
-  img_closed = loadImage("bottle_close.jpg");
-  img_opened = loadImage("bottle_open.jpg");
+  img_closed = loadImage("bottleClose.jpg");
+  img_opened = loadImage("bottleOpen.jpg");
   
   // clock image
-  clock_img = loadImage("clock.jpg");
+  //clock_img = loadImage("clock.jpg");
   
   // for rolling graph
   w = width/2 - 10;
@@ -111,16 +111,14 @@ void draw() {
   // for rolling raw measurements
   float yOffset = height/2 + 50;
   int currValueDraw = (int) (4096 - currValue);
-  int currDerivativeDraw = (int) (-currDerivative);
-  currDerivativeDraw = (int)map(currDerivativeDraw, 0, 4096, 0, 255);
+  
+  currValueDraw = (int)map(currValueDraw, 0, 4096, 0, 255);
   
   // moving rolling buffer
   for(int i = 1; i < w; i++) {
         yValues[i-1] = yValues[i];
-        yDerivatives[i-1] = yDerivatives[i];
   }
   yValues[w-1] = currValueDraw;
-  yDerivatives[w-1] = currDerivativeDraw;
   
   // counter for opened seconds
   //if (counter > 15) {
@@ -163,16 +161,20 @@ void draw() {
   //stroke(0);
   //rect(1500, 805, 50, 50);
   
-  if ((int)map(currValueDraw, 0, 4096, 0, 255) > (255 - rawThreshold)) {
-      image(img_closed, width/2 + 225, 125, 250, 375);
+  if (currValueDraw > (255 - rawThreshold)) {
+      image(img_closed, width/2 + 238, 125, 250, 375);
       textSize(60);
       fill(0);
-      text("Lid Close", 1150, 785);
+      text("Lid", 1145, 785);
+      fill(255,0,0);
+      text("Close", 1250, 785);
   }else {
-      image(img_opened, width/2 + 2, 0, width / 2 - 2, height/2 - 2);
+      image(img_opened, width/2 + 230, 119, 365, 386);
       textSize(60);
       fill(0);
-      text("Lid Open", 1150, 785);
+      text("Lid", 1145, 785);
+      fill(0,255,0);
+      text("Open", 1250, 785);
       //calculateSeconds();
       //float c = counter;
       //strokeWeight(5);
@@ -217,13 +219,13 @@ void draw() {
     }
   } 
   
-  // drawing rolling buffer for derivative
+  // drawing rolling buffer for intensity
   noStroke();
   fill(255);
   rect(0, yOffset, width/2 - 2, 300);
   for(int i=1; i<w; i++) {
         fill(0);
-        int y = (yDerivatives[i] - 255) * 2;
+        int y = (yValues[i] - 255) * 3;
         if (y < -255) {
           y = -255;
         }
@@ -231,13 +233,13 @@ void draw() {
   }
   fill(0);
   textSize(35);
-  text("First Derivative:", 10, yOffset - 13);
+  text("Raw measurement:", 10, yOffset - 13);
   // text(currValueDraw, 10, yOffset + 70);
   
   // draw threshold
   stroke(255, 200, 0);
   strokeWeight(1);
-  line(0, -derivativeThreshold + yOffset + 255, width/2, -derivativeThreshold + yOffset + 255);
+  line(0, 3 * (-rawThreshold) + yOffset + 255, width/2, 3 * (-rawThreshold) + yOffset + 255);
   
   formerDerivative = currDerivative;
 }
