@@ -48,8 +48,8 @@ void setup() {
   operationTime = millis();
   
   // image
-  img_closed = loadImage("refrigerator_closed.jpg");
-  img_opened = loadImage("refrigerator_opened.jpg");
+  img_closed = loadImage("doorClose.jpg");
+  img_opened = loadImage("doorOpen.jpg");
   
   // for rolling graph
   w = width/2 - 10;
@@ -107,42 +107,42 @@ void draw() {
   yValues[w-1] = currValueDraw;
   
   // counter for opened seconds
-  if (counter > 30) {
-    int c = flashCount / 45;
-    if (c % 2 == 0) {
-      fill(255, 0, 0, 127);
-      noStroke();
-      rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
-    } else {
-      fill(255);
-      noStroke();
-      rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
-    }
-    fill(0);
-    textSize(50);
-    text("Please Close The Door", 1000, 930);
-  } else {
-    fill(255);
-    noStroke();
-    rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
-  }
+  //if (counter > 30) {
+  //  int c = flashCount / 45;
+  //  if (c % 2 == 0) {
+  //    fill(255, 0, 0, 127);
+  //    noStroke();
+  //    rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
+  //  } else {
+  //    fill(255);
+  //    noStroke();
+  //    rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
+  //  }
+  //  fill(0);
+  //  textSize(50);
+  //  text("Please Close The Door", 1000, 930);
+  //} else {
+  //  fill(255);
+  //  noStroke();
+  //  rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
+  //}
   
   
   // image display
   if (currValueDraw > (255 - rawThreshold)) {
-      image(img_closed, width/2 + 150, 0, 600, height/2 - 2);
+      image(img_closed, width/2 + 5, 0, 600, height/2 - 2);
       counter = 0;
       fill(0);
       textSize(50);
       text("Door Closed", 1120, 800);
   } else {
-      image(img_opened, width/2 + 150, 0, 600, height/2 - 2);
+      image(img_opened, width/2 + 5, 0, 600, height/2 - 2);
       calculateSeconds();
       fill(0);
       textSize(50);
-      text("Door Open", 1120, 750);
-      textSize(70);
-      text(counter + "s", 1200, 850);
+      text("Door Open", 1120, 800);
+      //textSize(70);
+      //text(counter + "s", 1200, 850);
   } 
   
   // drawing rolling buffer for intensity

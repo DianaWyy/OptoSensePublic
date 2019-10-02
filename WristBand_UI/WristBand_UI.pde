@@ -30,7 +30,7 @@ int mostSignificant = -1;
 //float keyFrame[] = new float [8];
 //long keyFrameIndex = -1;
 //float prevCorr = -1;
-float threshold = 0.2;
+float threshold = 0.4;
 //float corrThreshold = 0.5; // Threshold of similarity
 //float differenceThreshold = 500; //Threshold of change
 //long frameThreshold = 300; //Threshold of periodic patterns
@@ -45,19 +45,22 @@ boolean firstPeak = false;
 
 boolean simulation = true;
 
+int countStep = 0;
+int imageIndex = 0;
+
+
 // for liquid detection
 float minSlope = Float.MAX_VALUE;
 
 // walking man
-PImage imgRight;
-PImage imgLeft;
+PImage pose_0, pose_1, pose_2, pose_3, pose_4, pose_5, pose_6, pose_7, pose_standing;
 
 void setup() {
   ////Test
   //float testPrev[] = {2.0f, 3.0f, 5.0f, 4.0f};
   //float testCur[] = {1.0f, 2.0f, 3.0f, 5.0f};
   //println(isMovingRight(testPrev, testCur, 4));
-  
+  //size(1680, 1000);
   fullScreen();
   // Starts a myServer on port 2337
   myServer = new Server(this, 2337); 
@@ -66,7 +69,7 @@ void setup() {
   
   //Simulation
   if(simulation) {
-    frameRate(10);
+    frameRate(4);
     table = loadTable("measurements_walking.csv", "header");  
   }
   else {
@@ -77,8 +80,15 @@ void setup() {
   }
   
    // image
-  imgRight = loadImage("right.jpg");
-  imgLeft = loadImage("left.jpg");
+  pose_0 = loadImage("pose_0.png");
+  pose_1 = loadImage("pose_1.png");
+  pose_2 = loadImage("pose_2.png");
+  pose_3 = loadImage("pose_3.png");
+  pose_4 = loadImage("pose_4.png");
+  pose_5 = loadImage("pose_5.png");
+  pose_6 = loadImage("pose_6.png");
+  pose_7 = loadImage("pose_7.png");
+  pose_standing = loadImage("pose_standing.png");
 }
 
 void draw() {
@@ -157,7 +167,7 @@ void draw() {
   
   //Direction information
   if(fpsCounter > 0 || simulation){
-    float difference = computeDistance(prevMeasurements, measurements, 8); // Euclidean distance between frames
+    float difference = computeDistance(prevMeasurements, measurements, numRow); // Euclidean distance between frames
     if(difference > 0) { //
       frameCounter++; //count valid frames
       
@@ -226,17 +236,49 @@ void draw() {
       //      keyFrameIndex = -1; //reset keyFrame
       //    }
       //  }
-      float[] leftOrRight = movingLeftOrRight(prevMeasurements, measurements, 8);
+      float[] leftOrRight = movingLeftOrRight(prevMeasurements, measurements,  0, 8);
       float movingLeft = leftOrRight[0] - leftOrRight[1];
       println(movingLeft);
-      image(imgRight, width/2 + 250, 20, 275, height/2 - 25);
-      if(movingLeft > threshold) {
-        direction = "Left";
-      } else if(movingLeft < -1 * threshold){
-        if(direction == "Left")
+      imageIndex = -1;
+      int frameBeforeStop = 6; // frames of waiting before stops 
+      if(direction == "Left") {
+        if(movingLeft < -1 * threshold) {
+          imageIndex = 0;
+          direction = "Right";
+          countStep = 0;
+        }
+        else if(countStep == 0) {
+          imageIndex = 5  ;
+          countStep++;
+        }
+        else if(countStep == 1) {
+          imageIndex = 6;
+          countStep++;
+        }
+        else if(countStep < frameBeforeStop) {
+          imageIndex = 7;
+          countStep++;
+        }
+      }
+      else {
+        if(movingLeft > threshold) {
+          imageIndex = 4;
+          direction = "Left";
+          countStep = 0;
           periodicCounter++;
-          image(imgLeft, width/2 + 250, 20, 300, height/2 - 25);
-        direction = "Right";
+        }
+        else if(countStep == 0) {
+          imageIndex = 1;
+          countStep++;
+        }
+        else if(countStep == 1) {
+          imageIndex = 2;
+          countStep++;
+        }
+        else if(countStep < frameBeforeStop) {
+          imageIndex = 3;
+          countStep++;
+        }
       }
       for(int i = 0; i < 8; i++) {
         prevMeasurements[i] = measurements[i];
@@ -246,11 +288,40 @@ void draw() {
       //prevDifference = difference; 
     }
   }
-  String display = direction + " Count: " + periodicCounter;
+  switch(imageIndex) {
+    case 0:
+      image(pose_0, width/2 + 250, 20, height/3, height/2);
+      break;
+    case 1:
+      image(pose_1, width/2 + 250, 20, height/3, height/2);
+      break;
+    case 2:
+      image(pose_2, width/2 + 250, 20, height/3, height/2);
+      break;
+    case 3:
+      image(pose_3, width/2 + 250, 20, height/3, height/2);
+      break;
+    case 4:
+      image(pose_4, width/2 + 250, 20, height/3, height/2);
+      break;
+    case 5:
+      image(pose_5, width/2 + 250, 20, height/3, height/2);
+      break;
+    case 6:
+      image(pose_6, width/2 + 250, 20, height/3, height/2);
+      break;
+    case 7:
+      image(pose_7, width/2 + 250, 20, height/3, height/2);
+      break;
+    default:
+      image(pose_standing, width/2 + 250, 20, height/3, height/2);
+      break;
+  }
+  String display = periodicCounter + " Steps";
   //+ " Freq: " + float(fps) / float(period) + "";
   fill(0);
   textSize(45);
-  text(display, width/2 + 270, height/2 + 275);
+  text(display, width*3/4 - 100, height*3/4);
   
 }
 
@@ -327,19 +398,39 @@ float computeDistance(float[] inputPrev, float[] inputCur, int len) {
   return distance[0][1];
 }
 
-float[] movingLeftOrRight(float[] inputPrev, float[] inputCur, int len) {
+float[] movingLeftOrRight(float[] inputPrev, float[] inputCur, int start, int len) {
+  float[] dataCur = new float[len];
+  for(int i = 0; i < len; i++){
+     dataCur[i] = inputCur[start + i];
+  }
+  
   float[] dataPrev = new float[len];
   for(int i = 0; i < len - 1; i++){
-     dataPrev[i] = inputPrev[i + 1];
+     dataPrev[i] = inputPrev[start + i + 1];
   }
-  dataPrev[len - 1] = inputPrev[0];
-  float linearCorrMovingRight = Correlation.linear(dataPrev, inputCur, true);
+  
+  if(start + len == numRow)
+    dataPrev[len - 1] = inputPrev[0];
+  else
+    dataPrev[len - 1] = inputPrev[start + len];
+    
+  //float distanceMovingRight = computeDistance(dataPrev, dataCur, numRow);
+  float linearCorrMovingRight = Correlation.linear(dataPrev, dataCur, true);
+
   for(int i = 0; i < len - 1; i++){
-     dataPrev[i + 1] = inputPrev[i];
+     dataPrev[i + 1] = inputPrev[start + i];
   }
-  dataPrev[0] = inputPrev[len - 1];
-  float linearCorrMovingLeft = Correlation.linear(dataPrev, inputCur, true);
+  
+  if(start == 0)
+    dataPrev[0] = inputPrev[numRow - 1];
+  else
+    dataPrev[0] = inputPrev[start  - 1];
+    
+  float linearCorrMovingLeft = Correlation.linear(dataPrev, dataCur, true);
+  //float distanceMovingLeft = computeDistance(dataPrev, dataCur, numRow);
+  
   float[] rst = {linearCorrMovingLeft, linearCorrMovingRight};
+  //float[] rst = {distanceMovingLeft, distanceMovingRight};
   //println(linearCorrMovingLeft + " " + linearCorrMovingRight);
   return rst;
 }
