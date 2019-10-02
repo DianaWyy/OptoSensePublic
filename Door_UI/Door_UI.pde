@@ -144,7 +144,7 @@ void draw() {
       fill(0);
       textSize(60);
       text("Door", 1140, 800);
-      fill(0,255,0);
+      fill(50,205,50);
       text("Open", 1300, 800);
       //textSize(70);
       //text(counter + "s", 1200, 850);
@@ -156,7 +156,7 @@ void draw() {
   rect(0, yOffset, width/2 - 2, 300);
   for(int i=1; i<w; i++) {
         fill(0);
-        int y = (yValues[i] - 255) * 3;
+        int y = (yValues[i] - 255) * 2;
         if (y < -255) {
           y = -255;
         }
