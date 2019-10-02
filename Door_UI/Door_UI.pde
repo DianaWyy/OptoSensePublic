@@ -133,14 +133,17 @@ void draw() {
       image(img_closed, width/2 + 5, 0, 600, height/2 - 2);
       counter = 0;
       fill(0);
-      textSize(50);
-      text("Door Closed", 1120, 800);
+      textSize(60);
+      text("Door Close", 1140, 800);
   } else {
-      image(img_opened, width/2 + 5, 0, 600, height/2 - 2);
+      image(img_opened, width/2 + 290, 0, 600, height/2 - 2);
       calculateSeconds();
+      fill(255,0,0);
+      textSize(45);
+      text("ATTENTION", 1170, 750);
       fill(0);
-      textSize(50);
-      text("Door Open", 1120, 800);
+      textSize(60);
+      text("Door Open", 1140, 850);
       //textSize(70);
       //text(counter + "s", 1200, 850);
   } 
