@@ -152,47 +152,53 @@ void draw() {
   //}
   
   // reminder image display
-  image(clock_img, 950, 725, 125, 125);
-  // reminder text display
-  textSize(50);
-  fill(0);
-  text("Reminder to", 1150, 770);
-  text("TAKE MEDICINE", 1100, 850);
-  // tick
-  fill(255);
-  stroke(0);
-  rect(1500, 805, 50, 50);
+  //image(clock_img, 950, 725, 125, 125);
+  //// reminder text display
+  //textSize(50);
+  //fill(0);
+  //text("Reminder to", 1150, 770);
+  //text("TAKE MEDICINE", 1100, 850);
+  //// tick
+  //fill(255);
+  //stroke(0);
+  //rect(1500, 805, 50, 50);
   
   if ((int)map(currValueDraw, 0, 4096, 0, 255) > (255 - rawThreshold)) {
       image(img_closed, width/2 + 225, 125, 250, 375);
+      textSize(50);
+      fill(0);
+      text("Lid Close", 1150, 785);
   }else {
       image(img_opened, width/2 + 2, 0, width / 2 - 2, height/2 - 2);
-      calculateSeconds();
-      float c = counter;
-      strokeWeight(5);
-      if (c == 1) {
-        line(1505, 835, 1510, 840);
-      } else if (c == 2) {
-        line(1505, 835, 1515, 845);
-      } else if (c == 3) {
-        line(1505, 835, 1520, 850);
-      } else if (c == 4) {
-        line(1505, 835, 1525, 855);
-      } else if (c == 5) {
-        line(1505, 835, 1525, 855);
-        line(1525, 855, 1530, 845);
-      } else if (c == 6) {
-        line(1505, 835, 1525, 855);
-        line(1525, 855, 1535, 835);
-      } else if (c == 7) {
-        line(1505, 835, 1525, 855);
-        line(1525, 855, 1540, 825);
-      } else if (c == 8) {
-        line(1505, 835, 1525, 855);
-        line(1525, 855, 1545, 815);
-      } else if (c == 9) {
-        showTick = true;
-      }
+      textSize(50);
+      fill(0);
+      text("Lid Open", 1150, 785);
+      //calculateSeconds();
+      //float c = counter;
+      //strokeWeight(5);
+      //if (c == 1) {
+      //  line(1505, 835, 1510, 840);
+      //} else if (c == 2) {
+      //  line(1505, 835, 1515, 845);
+      //} else if (c == 3) {
+      //  line(1505, 835, 1520, 850);
+      //} else if (c == 4) {
+      //  line(1505, 835, 1525, 855);
+      //} else if (c == 5) {
+      //  line(1505, 835, 1525, 855);
+      //  line(1525, 855, 1530, 845);
+      //} else if (c == 6) {
+      //  line(1505, 835, 1525, 855);
+      //  line(1525, 855, 1535, 835);
+      //} else if (c == 7) {
+      //  line(1505, 835, 1525, 855);
+      //  line(1525, 855, 1540, 825);
+      //} else if (c == 8) {
+      //  line(1505, 835, 1525, 855);
+      //  line(1525, 855, 1545, 815);
+      //} else if (c == 9) {
+      //  showTick = true;
+      //}
       //fill(0);
       //textSize(50);
       //text("Pill Bottle Opened", 1075, 700);
