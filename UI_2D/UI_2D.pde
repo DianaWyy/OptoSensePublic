@@ -99,34 +99,22 @@ void draw() {
   }
   
   float maxValue = 224.0;
+  int k = frameCounter % 5;
   //println(touchPoints[4][1] + ", " + touchPoints[4][0]);
   for(int i = 4; i < 5; i++){ 
     if(touchPoints[i][0] < 255 && touchPoints[i][1] < 255 && touchPoints[i][0] > 0 && touchPoints[i][1] > 0 ) { 
-
       //println(touchPoints[0][0] + ", " + touchPoints[0][1]);
-      if (frameCounter % 5 == 0) {
-        touchPointsArray[0][0] = touchPoints[i][0];
-        touchPointsArray[0][1] = touchPoints[i][1];
-      } else if (frameCounter % 5 == 1) {
-        touchPointsArray[1][0] = touchPoints[i][0];
-        touchPointsArray[1][1] = touchPoints[i][1];
-      } else if (frameCounter % 5 == 2) {
-        touchPointsArray[2][0] = touchPoints[i][0];
-        touchPointsArray[2][1] = touchPoints[i][1];
-      } else if (frameCounter % 5 == 3) {
-        touchPointsArray[3][0] = touchPoints[i][0];
-        touchPointsArray[3][1] = touchPoints[i][1];
-      } else if (frameCounter % 5 == 4) {
-        touchPointsArray[4][0] = touchPoints[i][0];
-        touchPointsArray[4][1] = touchPoints[i][1];
-      }
+        touchPointsArray[k][0] = touchPoints[i][0];
+        touchPointsArray[k][1] = touchPoints[i][1];
     }
   }
   
   for (int i = 0; i < touchPointsArray.length; i++) {
+    k %= 5;
     fill(0, 0, 0, 100-i*18);
     noStroke();
-    circle(15 + width/2 + (maxValue - touchPointsArray[i][1]) * (width/2) / maxValue, 85 + touchPointsArray[i][0] * (width/2) / maxValue, 30);
+    circle(15 + width/2 + (maxValue - touchPointsArray[k][1]) * (width/2) / maxValue, 85 + touchPointsArray[k][0] * (width/2) / maxValue, 30);
+    k++;
   }
   frameCounter++;
   //// show FPS
