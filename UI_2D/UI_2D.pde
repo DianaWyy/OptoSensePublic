@@ -110,11 +110,11 @@ void draw() {
   }
   
   for (int i = 0; i < touchPointsArray.length; i++) {
-    k %= 5;
-    fill(0, 0, 0, 100-i*18);
+    fill(0, 0, 0, 100-i*15);
     noStroke();
     circle(15 + width/2 + (maxValue - touchPointsArray[k][1]) * (width/2) / maxValue, 85 + touchPointsArray[k][0] * (width/2) / maxValue, 30);
-    k++;
+    k--;
+    if (k < 0) {k+=5;}
   }
   frameCounter++;
   //// show FPS
