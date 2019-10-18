@@ -54,7 +54,7 @@ void draw() {
     fill(0);
     textSize(80);
     text(index + ". " + strs[rand], width/2 - 250, height/2 - 300);
-    if (rand < 2) {image(imgs[rand], width/2 - 150, 325, 231, 550);}
+    if (rand < 2) {image(imgs[rand], width/2 - 130, 325, 231, 550);}
     else {image(imgs[rand], width/2 - 225, height/2 - 100, 550, 231);}
     
     if (count % 5 == 0 && !changed) {
@@ -69,7 +69,7 @@ void draw() {
       //text(index + ". " + strs[rand], width/2 - 225, height/2);
       changed = true;
     }
-    if (count % 10 == 1) {changed = false;}
+    if (count % 5 == 1) {changed = false;}
     if (count == 105) {exit();}
   }
 }
