@@ -37,7 +37,7 @@ PImage mail_opened;
 PImage drawer_closed;
 PImage drawer_opened;
 PImage[] imgs = new PImage[6];
-int index = 4;
+String obj;
 
 // flash counter
 int flashCount = 0;
@@ -143,12 +143,12 @@ void draw() {
   //  rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
   //}
   
-  
+  obj = "mailbox";
   // image display
   if (currValueDraw > (255 - rawThreshold)) {
-    if (index <= 1) {
+    if (obj == "door") {
         image(imgs[0], width/2 + 5, 0, 600, height/2 - 2);
-    } else if (index <= 3) {
+    } else if (obj == "mailbox") {
         image(imgs[2], width/2 + 275, 75, 288, 414.5);
     } else {
         image(imgs[4], width/2 + 300, 150, 227.5, 293);
@@ -160,9 +160,9 @@ void draw() {
       fill(255,0,0);
       text("Close", 1300, 800);
   } else {
-    if (index <= 1) {
+    if (obj == "door") {
       image(imgs[1], width/2 + 293, 0, 600, height/2 - 2);
-    } else if (index <= 3) {
+    } else if (obj == "mailbox") {
         image(imgs[3], width/2 + 275, 75, 310.5, 412);
     } else {
         image(imgs[5], width/2 + 300, 150, 263.5, 294.5);
