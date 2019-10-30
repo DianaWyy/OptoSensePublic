@@ -30,8 +30,14 @@ Table table;
 float measurements [] = new float [8];
 
 // Image initialize
-PImage img_closed;
-PImage img_opened;
+PImage door_closed;
+PImage door_opened;
+PImage mail_closed;
+PImage mail_opened;
+PImage drawer_closed;
+PImage drawer_opened;
+PImage[] imgs = new PImage[6];
+int index = 4;
 
 // flash counter
 int flashCount = 0;
@@ -48,9 +54,19 @@ void setup() {
   operationTime = millis();
   
   // image
-  img_closed = loadImage("doorClose.jpg");
-  img_opened = loadImage("doorOpen.jpg");
+  door_closed = loadImage("doorClose.jpg");
+  door_opened = loadImage("doorOpen.jpg");
+  mail_closed = loadImage("mailboxClose.png");
+  mail_opened = loadImage("mailboxOpen.png");
+  drawer_closed = loadImage("drawerClose.png");
+  drawer_opened = loadImage("drawerOpen.png");
   
+  imgs[0] = door_closed;
+  imgs[1] = door_opened;
+  imgs[2] = mail_closed;
+  imgs[3] = mail_opened;
+  imgs[4] = drawer_closed;
+  imgs[5] = drawer_opened;
   // for rolling graph
   w = width/2 - 10;
   strokeWeight(3);
@@ -130,7 +146,13 @@ void draw() {
   
   // image display
   if (currValueDraw > (255 - rawThreshold)) {
-      image(img_closed, width/2 + 5, 0, 600, height/2 - 2);
+    if (index <= 1) {
+        image(imgs[0], width/2 + 5, 0, 600, height/2 - 2);
+    } else if (index <= 3) {
+        image(imgs[2], width/2 + 275, 75, 288, 414.5);
+    } else {
+        image(imgs[4], width/2 + 300, 150, 227.5, 293);
+    }
       counter = 0;
       fill(0);
       textSize(60);
@@ -138,7 +160,13 @@ void draw() {
       fill(255,0,0);
       text("Close", 1300, 800);
   } else {
-      image(img_opened, width/2 + 293, 0, 600, height/2 - 2);
+    if (index <= 1) {
+      image(imgs[1], width/2 + 293, 0, 600, height/2 - 2);
+    } else if (index <= 3) {
+        image(imgs[3], width/2 + 275, 75, 310.5, 412);
+    } else {
+        image(imgs[5], width/2 + 300, 150, 263.5, 294.5);
+    }
       calculateSeconds();
       fill(255,0,0);
       fill(0);
