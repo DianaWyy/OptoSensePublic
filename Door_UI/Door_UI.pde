@@ -143,12 +143,12 @@ void draw() {
   //  rect(width/2 + 2, height/2 + 2, width/2 - 2, height/2 - 2);
   //}
   
-  obj = "mailbox";
+  obj = "Door";
   // image display
   if (currValueDraw > (255 - rawThreshold)) {
-    if (obj == "door") {
+    if (obj == "Door") {
         image(imgs[0], width/2 + 5, 0, 600, height/2 - 2);
-    } else if (obj == "mailbox") {
+    } else if (obj == "Mailbox") {
         image(imgs[2], width/2 + 275, 75, 288, 414.5);
     } else {
         image(imgs[4], width/2 + 300, 150, 227.5, 293);
@@ -156,13 +156,13 @@ void draw() {
       counter = 0;
       fill(0);
       textSize(60);
-      text("Door", 1140, 800);
+      text(obj, 1050, 800);
       fill(255,0,0);
       text("Close", 1300, 800);
   } else {
-    if (obj == "door") {
+    if (obj == "Door") {
       image(imgs[1], width/2 + 293, 0, 600, height/2 - 2);
-    } else if (obj == "mailbox") {
+    } else if (obj == "Mailbox") {
         image(imgs[3], width/2 + 275, 75, 310.5, 412);
     } else {
         image(imgs[5], width/2 + 300, 150, 263.5, 294.5);
@@ -171,7 +171,7 @@ void draw() {
       fill(255,0,0);
       fill(0);
       textSize(60);
-      text("Door", 1140, 800);
+      text(obj, 1050, 800);
       fill(50,205,50);
       text("Open", 1300, 800);
       //textSize(70);
