@@ -58,8 +58,8 @@ void setup() {
   operationTime = millis();
   
   // image
-  img_closed = loadImage("bottleClose.jpg");
-  img_opened = loadImage("bottleOpen.jpg");
+  img_closed = loadImage("bottleClose.png");
+  img_opened = loadImage("bottleOpen.png");
   
   // clock image
   //clock_img = loadImage("clock.jpg");
@@ -162,14 +162,14 @@ void draw() {
   //rect(1500, 805, 50, 50);
   
   if (currValueDraw > (255 - rawThreshold)) {
-      image(img_closed, width/2 + 238, 125, 250, 375);
+      image(img_closed, width/2 + 330, 75, 169, 397);
       textSize(60);
       fill(0);
       text("Lid", 1145, 785);
       fill(255,0,0);
       text("Close", 1250, 785);
   }else {
-      image(img_opened, width/2 + 230, 119, 365, 386);
+      image(img_opened, width/2 + 330, 75, 169, 398.5);
       textSize(60);
       fill(0);
       text("Lid", 1145, 785);
