@@ -6,10 +6,11 @@ Minim minim;
 AudioSample kick;
 
 //long operationTime = 0;
-//int count = -5;
+int count = 0;
 int index;
 
 String[] strs = {"Swipe Up", "Swipe Down", "Swipe Left", "Swipe Right"};
+boolean[] occured = {false, false, false, false};
 int rand;
 //boolean changed = false;
 
@@ -31,6 +32,7 @@ void setup() {
   kick = minim.loadSample("beep.mp3", 512);
   
   rand = int(random(strs.length));
+  occured[rand] = true;
   index = 1;
   
   arrowUp = loadImage("arrowUp.png");
@@ -56,6 +58,10 @@ void draw() {
     text(index + ". " + strs[rand], width/2 - 250, height/2 - 300);
     if (rand < 2) {image(imgs[rand], width/2 - 130, 325, 231, 550);}
     else {image(imgs[rand], width/2 - 225, height/2 - 100, 550, 231);}
+    
+    if (index == 21) {
+      exit();
+    }
     
     //if (count % 5 == 0 && !changed) {
     //  fill(255);
@@ -88,9 +94,16 @@ void keyPressed(){
       fill(255);
       noStroke();
       rect(width/2 - 200, height/2 - 100, 400, 400);
-      rand = int(random(strs.length));
       index++;
+      count++;
       kick.trigger(); // play beep sound
+      if (count == 5) {
+        while (occured[rand] == true) {
+          rand = int(random(strs.length));
+        }
+        occured[rand] = true;
+        count = 0;
+      }
      }
   }
 }
