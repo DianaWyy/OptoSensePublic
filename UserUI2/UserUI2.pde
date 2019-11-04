@@ -6,7 +6,7 @@ Minim minim;
 AudioSample kick;
 
 long operationTime = 0;
-int count = -5;
+int count = 0;
 int index;
 
 int numRow = 8;
@@ -15,11 +15,10 @@ int randI;
 int randJ;
 boolean changed = false;
 
-PImage cross;
+PImage plus;
 
 void setup() {
-  //size(1680, 1000);
-  fullScreen();
+  size(1000, 1000);
   
   // white background
   background(255);
@@ -31,35 +30,26 @@ void setup() {
   randI = int(random(numRow));
   randJ = int(random(numCol));
   
-  cross = loadImage("cross.png");
+  plus = loadImage("plus.png");
   index = 0;
 }
 
 void draw() {
   background(255);
-  float size = width/2/numRow;
+  float size = width/numRow;
   for (int j = 0; j < numRow; j++){
     for(int i = 0; i < numCol; i++){
-      if (randI == i && randJ == j && count >= 0) {
-        image(cross, randI * size, 100 + randJ * size, size-3, size-3);
+      if (randI == i && randJ == j) {
+        image(plus, randI * size, randJ * size, size-3, size-3);
       } else {
         fill(0);
         stroke(255);
-        rect(i*size, 100+j*size, size-3, size-3);
+        rect(i*size, j*size, size-3, size-3);
       }
     }
   }
   calculateSeconds();
-  if (count < 0) {
-    fill(0);
-    textSize(80);
-    text("Testing Start", width/2 + 125, height/2);
-  } else {
-    fill(0);
-    textSize(80);
-    text(index + ". Touch Here", width/2 + 125, height/2);
-    
-    if (count % 5 == 0 && !changed) {
+  if (count % 5 == 0 && !changed) {
       fill(255);
       noStroke();
       rect(0,0,width,height);
@@ -71,7 +61,6 @@ void draw() {
     }
     if (count % 5 == 1) {changed = false;}
     if (count == 105) {exit();}
-  }
 }
   
 void calculateSeconds() {
