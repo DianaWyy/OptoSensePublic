@@ -41,10 +41,6 @@ void draw() {
     for(int i = 0; i < numCol; i++){
       if (randI == i && randJ == j) {
         image(plus, randI * size, randJ * size, size-3, size-3);
-      } else {
-        fill(0);
-        stroke(255);
-        rect(i*size, j*size, size-3, size-3);
       }
     }
   }
