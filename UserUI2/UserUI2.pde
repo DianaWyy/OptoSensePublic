@@ -1,19 +1,18 @@
 import ddf.minim.AudioSample;
 import ddf.minim.Minim;
 import processing.net.*;
+import java.awt.event.KeyEvent;
 
 Minim minim; 
 AudioSample kick;
 
-long operationTime = 0;
-int count = 0;
-int index;
+//long operationTime = 0;
+//int count = 0;
 
 int numRow = 8;
 int numCol = 8;
 int randI;
 int randJ;
-boolean changed = false;
 
 PImage plus;
 
@@ -22,7 +21,7 @@ void setup() {
   
   // white background
   background(255);
-  operationTime = millis();
+  //operationTime = millis();
   
   minim = new Minim(this); 
   kick = minim.loadSample("beep.mp3", 512);
@@ -31,7 +30,6 @@ void setup() {
   randJ = int(random(numCol));
   
   plus = loadImage("plus.png");
-  index = 0;
 }
 
 void draw() {
@@ -44,25 +42,27 @@ void draw() {
       }
     }
   }
-  calculateSeconds();
-  if (count % 5 == 0 && !changed) {
-      fill(255);
-      noStroke();
-      rect(0,0,width,height);
-      randI = int(random(numRow));
-      randJ = int(random(numCol));
-      index++;
-      kick.trigger(); // play beep sound
-      changed = true;
-    }
-    if (count % 5 == 1) {changed = false;}
-    if (count == 105) {exit();}
+  //calculateSeconds();
+  //  if (count == 105) {exit();}
 }
   
-void calculateSeconds() {
-  long currentTime = millis();
-  if(currentTime - operationTime > 1000){
-    operationTime = currentTime;
-    count ++;
+//void calculateSeconds() {
+//  long currentTime = millis();
+//  if(currentTime - operationTime > 1000){
+//    operationTime = currentTime;
+//    count ++;
+//  }
+//}
+
+void keyPressed(){
+  if (keyPressed) {
+    if(key == ' '){
+        fill(255);
+        noStroke();
+        rect(0,0,width,height);
+        randI = int(random(numRow));
+        randJ = int(random(numCol));
+        kick.trigger(); // play beep sound
+     }
   }
 }
