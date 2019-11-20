@@ -3,16 +3,26 @@ import papaya.*;
 
 Server myServer;
 
+// pixels number
 int numRow = 8;
 int numCol = 1;
 int numPixel = numRow * numCol;
 
+// for data loading
 float[] gdata = new float[numPixel];
+
+// color
 ColorMap cm = new ColorMap();
+
+// frames per second counter
 int fpsCounter = 0;
 String fpsIndicator = "";
 int fps = 0;
+
+// time count
 long lastTime = -1;
+
+// maximum values
 float maxV = 4095;
 float maxPeriod = 100;
 
@@ -26,10 +36,6 @@ float prevDelta[] = new float [8];
 float maxMeasurements [] = new float [8];
 float minMeasurements [] = new float [8];
 int mostSignificant = -1;
-//float prevDifference = -1;
-//float keyFrame[] = new float [8];
-//long keyFrameIndex = -1;
-//float prevCorr = -1;
 float threshold = 0.4;
 //float corrThreshold = 0.5; // Threshold of similarity
 //float differenceThreshold = 500; //Threshold of change
@@ -43,11 +49,14 @@ int period = 0;
 int searchFreq = 20;
 boolean firstPeak = false;
 
+// simulation mode
 boolean simulation = true;
 
+// step count
 int countStep = 0;
-int imageIndex = 0;
 
+// for image display
+int imageIndex = 0;
 
 // for liquid detection
 float minSlope = Float.MAX_VALUE;
@@ -61,11 +70,11 @@ void setup() {
   //float testCur[] = {1.0f, 2.0f, 3.0f, 5.0f};
   //println(isMovingRight(testPrev, testCur, 4));
   //size(1680, 1000);
-  fullScreen();
+  fullScreen(); // screen size
   // Starts a myServer on port 2337
   myServer = new Server(this, 2337); 
-  background(255);
-  lastTime = millis();
+  background(255); // white
+  lastTime = millis(); // start time count
   
   //Simulation
   if(simulation) {
@@ -79,7 +88,7 @@ void setup() {
     }
   }
   
-   // image
+  // walking image
   pose_0 = loadImage("pose_0.png");
   pose_1 = loadImage("pose_1.png");
   pose_2 = loadImage("pose_2.png");
@@ -92,8 +101,9 @@ void setup() {
 }
 
 void draw() {
-  background(255);
+  background(255); // white
   
+  // simulation
   if(simulation) {
     TableRow row = table.getRow(frameCounter);
     for(int i = 0; i < 8; i++){
@@ -113,8 +123,9 @@ void draw() {
     }
   }
   
+  // for pixel size
   float size = width/2/numRow;
-  
+  // color pixels
   for (int j = 0; j < numRow; j++){
     for(int i = 0; i < numCol; i++){
         float colorVal = gdata[i*numRow + j];
@@ -126,14 +137,6 @@ void draw() {
     }
     //break;
   }
-  
-  //fill(255);
-  //circle(400, 275, 250);
-  
-  // show FPS
-  //fill(0);
-  //textSize(20);
-  //text("FPS: "+fpsIndicator, 20, 20);
  
   // Draw grid lines
   stroke(0);
@@ -141,14 +144,14 @@ void draw() {
   line(width/2, 0, width/2, height);
   line(0, height/2, width, height/2);
   
+  // load data measurements
   for(int i = 0; i < 8; i++){
     measurements[i] = gdata[i];
-    //measurementsDraw[i] = map(prevDelta[i], 4096, -4096, 0, height-20);
     measurementsDraw[i] = map(gdata[i], 4096, 0, 0, height/2-20);
   }
   
+  // draw bar chart
   minSlope = Float.MAX_VALUE;
-  
   for(int i = 1; i < 8; i++){
     stroke(255);
     strokeWeight(5);
@@ -161,9 +164,6 @@ void draw() {
       minSlope = slope;
     }
   }
-  
-  //textSize(20);
-  //text("Min Slope: "+minSlope, width/2, 20);
   
   //Direction information
   if(fpsCounter > 0 || simulation){
@@ -288,6 +288,7 @@ void draw() {
       //prevDifference = difference; 
     }
   }
+  // image display
   switch(imageIndex) {
     case 0:
       image(pose_0, width/2 + 250, 20, height/3, height/2);
@@ -317,40 +318,41 @@ void draw() {
       image(pose_standing, width/2 + 250, 20, height/3, height/2);
       break;
   }
+  
+  // show step counts
   String display = periodicCounter + " Steps";
-  //+ " Freq: " + float(fps) / float(period) + "";
   fill(0);
   textSize(45);
   text(display, width*3/4 - 100, height*3/4);
-  
 }
 
+// calculate frames per second
 void calculateFPS(){
-  // calculate frames per second
   long currentTime = millis();
-  if(currentTime - lastTime > 1000){
+  if (currentTime - lastTime > 1000) {
     lastTime = currentTime;
     fps = fpsCounter;
     fpsIndicator = "" + fpsCounter;
     fpsCounter = 0;
-  }else{
+  } else {
     fpsCounter++;
   }
 }
 
+
+// process data
 void processData(String resultString){
   String[] data = split(resultString, " ");
+
+  if(data.length != numPixel) return;
   
-      if(data.length != numPixel) return;
-      
-      for(int i = 0; i < data.length; i++){
-        gdata[i] = Float.parseFloat(data[i]);
-        //println(gdata[i]);
-      }
-      reorg(gdata);
-      
+  for(int i = 0; i < data.length; i++){
+    gdata[i] = Float.parseFloat(data[i]);
+  }
+  reorg(gdata);
 }
 
+// reorganize data
 void reorg(float[] gdata){
   
   float[] tdata = new float[8];
@@ -359,17 +361,19 @@ void reorg(float[] gdata){
   }
   
   gdata[7] = tdata[4];
-   gdata[6] = tdata[5];
-    gdata[5] = tdata[6];
-     gdata[4] = tdata[7];
+  gdata[6] = tdata[5];
+  gdata[5] = tdata[6];
+  gdata[4] = tdata[7];
   gdata[3] = tdata[0];
-   gdata[2] = tdata[1];
-    gdata[1] = tdata[2];
-     gdata[0] = tdata[3];
+  gdata[2] = tdata[1];
+  gdata[1] = tdata[2];
+  gdata[0] = tdata[3];
 }
   
+// key pressed functions
 void keyPressed(){
   
+  // save data
   if (!simulation && key == 's'){
     TableRow newRow = table.addRow();
     for(int i = 0; i < 8; i++){
@@ -381,6 +385,7 @@ void keyPressed(){
     saveTable(table, "data/measurements.csv");
     println("measurements saved into data/measurements.csv");
   }
+  // reset
   if (key == 'r'){
     reset();
     println("Reset");
@@ -388,6 +393,7 @@ void keyPressed(){
   
 }
 
+// compute distance
 float computeDistance(float[] inputPrev, float[] inputCur, int len) {
   float[][] data = new float[2][len];
   for(int i = 0; i < len; i++){
@@ -398,6 +404,7 @@ float computeDistance(float[] inputPrev, float[] inputCur, int len) {
   return distance[0][1];
 }
 
+// detect movement
 float[] movingLeftOrRight(float[] inputPrev, float[] inputCur, int start, int len) {
   float[] dataCur = new float[len];
   for(int i = 0; i < len; i++){
@@ -435,6 +442,7 @@ float[] movingLeftOrRight(float[] inputPrev, float[] inputCur, int start, int le
   return rst;
 }
 
+// find walking period
 void findPeriod() {
   float maxCorr = 0;
   for(int i = 1; i < pixelIndex; i++) {
@@ -459,7 +467,7 @@ void findPeriod() {
   }
 }
 
-
+// reset
 void reset() {
   for(int i = 0; i < 8; i++){
     measurements[i] = 0;
