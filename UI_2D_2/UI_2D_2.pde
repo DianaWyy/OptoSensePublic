@@ -2,6 +2,7 @@ import processing.net.*;
 
 Server myServer;
 
+// pixels
 int numRow = 8;
 int numCol = 8;
 int numTouchPoints = 5;
@@ -10,24 +11,33 @@ int numAllData = numPixel + numTouchPoints*2;
 
 int actualNumPixel = 64;
 
+// for loading data
 float[] gdata = new float[numAllData];
+float[][] touchPoints = new float[numTouchPoints][2];
+float[][] touchPointsArray = new float[5][2];
+
+// color
 ColorMap cm = new ColorMap();
+
+// frames per second counter
 int fpsCounter = 0;
 String fpsIndicator = "";
+int frameCounter = 0;
+
+// runing time count
 long lastTime = -1;
+
+// maximum data value
 float maxV = 256.0;
 
 // for saving measurements
 Table table;
 float background = maxV;
 
+// simulation mode
 boolean simulation = false;
 
-int frameCounter = 0;
-
-float[][] touchPoints = new float[numTouchPoints][2];
-float[][] touchPointsArray = new float[5][2];
-
+// swipes
 int index;
 String[] strs = {"Swipe Up", "Swipe Down", "Swipe Left", "Swipe Right"};
 PImage arrowUp;
@@ -37,11 +47,11 @@ PImage arrowRight;
 PImage[] imgs = new PImage[4];
 
 void setup() {
-  fullScreen();
+  fullScreen(); // screen size
   // Starts a myServer on port 2337
   myServer = new Server(this, 2337); 
-  background(255);
-  lastTime = millis();
+  background(255); // white
+  lastTime = millis(); // start time count
   
   //Simulation
   if(simulation) {
@@ -55,6 +65,7 @@ void setup() {
     }
   }
   
+  // load swipe images
   arrowUp = loadImage("arrowUp.png");
   arrowDown = loadImage("arrowDown.png");
   arrowLeft = loadImage("arrowLeft.png");
@@ -66,8 +77,9 @@ void setup() {
 }
 
 void draw() {
-  background(255);
+  background(255); // white
   
+  // simulation
   if(simulation) {
     TableRow row = table.getRow(frameCounter);
     for(int i = 0; i < numAllData; i++){
@@ -90,36 +102,36 @@ void draw() {
        newRow.setFloat("position_"+i, gdata[i]); 
     }
   }
+  // color pixels
   float size = width/2/numRow;
-    for (int j = 0; j < numRow; j++){
+  for (int j = 0; j < numRow; j++){
     for(int i = 0; i < numCol; i++){
-        float measurement = gdata[(numCol - 1 - i)*numRow + j];
-        //float colorVal = map(measurement, 4096, 0, 0, height-20);
-        float colorVal = measurement;
-        //println(j + " " + i + " " + colorVal);
-        float remap = (background-colorVal)/background;
-        if(remap < 0)
-          remap = 0;
-        int[] rgb = cm.getColor(remap);
-        fill(rgb[0], rgb[1], rgb[2]);
-        noStroke();
-        rect(i*size, 100+j*size, size-3, size-3);
-        //break; //show only the first row (since we only have one diode)
+      float measurement = gdata[(numCol - 1 - i)*numRow + j];
+      float colorVal = measurement;
+      float remap = (background-colorVal)/background;
+      if(remap < 0)
+        remap = 0;
+      int[] rgb = cm.getColor(remap);
+      fill(rgb[0], rgb[1], rgb[2]);
+      noStroke();
+      rect(i*size, 100+j*size, size-3, size-3);
+      //break; //show only the first row (since we only have one diode)
     }
     //break;
   }
   
-  index = 1;
+  // swipe text
+  index = 1; // index for swipes array
   fill(0);
   textSize(60);
   text(strs[index], width/2 + 280, 175);
-  
+  // swipe image display
   if (index < 2) {image(imgs[index], width/2 + 325, 300, 231, 550);}
     else {image(imgs[index], width/2 + 200, 400, 550, 231);}
 }
 
+// calculate frames per second
 void calculateFPS(){
-  // calculate frames per second
   long currentTime = millis();
   if(currentTime - lastTime > 1000){
     lastTime = currentTime;
@@ -130,19 +142,19 @@ void calculateFPS(){
   }
 }
 
+// process data
 void processData(String resultString){
   String[] data = split(resultString, " ");
+
+  if(data.length != numAllData) return;
   
-      if(data.length != numAllData) return;
-      
-      for(int i = 0; i < data.length; i++){
-        //println(i + " " + data[i]);
-        gdata[i] = Float.parseFloat(data[i]);
-        //println(gdata[i]);
-      }
-      reorg(gdata);
-      
+  for(int i = 0; i < data.length; i++){
+    gdata[i] = Float.parseFloat(data[i]);
+  }
+  reorg(gdata);   
 }
+
+// reorganize data
 void reorg(float[] gdata){
   
   float[] tdata = new float[8];
@@ -151,11 +163,11 @@ void reorg(float[] gdata){
   }
   
   gdata[7] = tdata[7];
-   gdata[6] = tdata[6];
-    gdata[5] = tdata[5];
-     gdata[4] = tdata[4];
+  gdata[6] = tdata[6];
+  gdata[5] = tdata[5];
+  gdata[4] = tdata[4];
   gdata[3] = tdata[3];
-   gdata[2] = tdata[2];
-    gdata[1] = tdata[1];
-     gdata[0] = tdata[0];
+  gdata[2] = tdata[2];
+  gdata[1] = tdata[1];
+  gdata[0] = tdata[0];
 }

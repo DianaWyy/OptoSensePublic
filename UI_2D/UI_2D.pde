@@ -11,7 +11,7 @@ int numAllData = numPixel + numTouchPoints*2;
 
 int actualNumPixel = 64;
 
-// data storage
+// for loading data
 float[] gdata = new float[numAllData];
 float[][] touchPoints = new float[numTouchPoints][2];
 float[][] touchPointsArray = new float[5][2];
