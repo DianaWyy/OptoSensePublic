@@ -118,15 +118,9 @@ void draw() {
     //break;
   }
   
-  // show FPS
-  //fill(0);
-  //textSize(20);
-  //text("FPS: "+fpsIndicator, 20, height/2 + 30);
- 
   // load measurements
   for(int i = 0; i < 8; i++){
    measurements[i] = gdata[i];
-   //measurementsDraw[i] = map(prevDelta[i], 4096, -4096, 0, height-20);
    measurementsDraw[i] = map(gdata[i], 4096, 0, 0, height-20);
   }
   
@@ -144,10 +138,6 @@ void draw() {
       minSlope = slope;
     }
   }
-  
-  //textSize(20);
-  //text("Min Slope: "+minSlope, width/2 - 200, height/2 + 30);
-  
   
   //Liquid detection algorithm
   if(fpsCounter > 0 || simulation){
@@ -260,9 +250,8 @@ void draw() {
   rect(width/2 + 300, 500, 325, -liquid_cup); 
 }
 
-
+// calculate frames per second
 void calculateFPS(){
-  // calculate frames per second
   long currentTime = millis();
   if(currentTime - lastTime > 1000){
     lastTime = currentTime;
