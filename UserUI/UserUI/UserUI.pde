@@ -2,38 +2,35 @@ import ddf.minim.AudioSample;
 import ddf.minim.Minim;
 import processing.net.*;
 
+// display sound
 Minim minim; 
 AudioSample kick;
 
-//long operationTime = 0;
-//int count = -5;
+// swipes
 int index;
-
 String[] strs = {"Swipe Up", "Swipe Down", "Swipe Left", "Swipe Right"};
 int rand;
-//boolean changed = false;
-
+// arrows
 PImage arrowUp;
 PImage arrowDown;
 PImage arrowLeft;
 PImage arrowRight;
 PImage[] imgs = new PImage[4];
-
+// for showing 5 same swipe commands consecutively
 IntList indices;
 int[] finalIndices;
 
 void setup() {
-  //size(1680, 1000);
-  //size(840, 500);
-  fullScreen();
+  fullScreen(); // screen size
   
   // white background
   background(255);
-  //operationTime = millis();
   
+  // load sound
   minim = new Minim(this); 
   kick = minim.loadSample("beep.mp3", 512);
   
+  // load indices
   indices = new IntList();
   for(int i = 0; i < 5; i++){
     indices.append(0);
@@ -46,6 +43,7 @@ void setup() {
   finalIndices = indices.array();
   index = 0;
   
+  // load arrow images
   arrowUp = loadImage("arrowUp.png");
   arrowDown = loadImage("arrowDown.png");
   arrowLeft = loadImage("arrowLeft.png");
@@ -57,57 +55,31 @@ void setup() {
 }
 
 void draw() {
-  background(255);
+  background(255); // white
   if (index == 20) {
-    exit();
+    exit(); // exit after 20 commands
   }
-  //calculateSeconds();
-  //if (count < 0) {
-  //  fill(0);
-  //  textSize(80);
-  //  text("Testing Start", width/2 - 225, height/2);
-  //} else {
-    fill(0);
-    textSize(80);
-    text((index + 1) + ". " + strs[finalIndices[index]], width/2 - 250, height/2 - 300);
-    if (finalIndices[index] < 2) {image(imgs[finalIndices[index]], width/2 - 130, 325, 231, 550);}
-    else {image(imgs[finalIndices[index]], width/2 - 225, height/2 - 100, 550, 231);}
-    
-    //if (count % 5 == 0 && !changed) {
-    //  fill(255);
-    //  noStroke();
-    //  rect(width/2 - 200, height/2 - 100, 400, 400);
-    //  rand = int(random(strs.length));
-    //  index++;
-    //  kick.trigger(); // play beep sound
-    //  //fill(0);
-    //  //textSize(80);
-    //  //text(index + ". " + strs[rand], width/2 - 225, height/2);
-    //  changed = true;
-    //}
-    //if (count % 5 == 1) {changed = false;}
-    //if (count == 105) {exit();}
-  //}
-}
   
-//void calculateSeconds() {
-//  long currentTime = millis();
-//  if(currentTime - operationTime > 1000){
-//    operationTime = currentTime;
-//    count ++;
-//  }
-//}
+  // swipe text
+  fill(0);
+  textSize(80);
+  text((index + 1) + ". " + strs[finalIndices[index]], width/2 - 250, height/2 - 300);
+  
+  // display image
+  if (finalIndices[index] < 2) {image(imgs[finalIndices[index]], width/2 - 130, 325, 231, 550);}
+  else {image(imgs[finalIndices[index]], width/2 - 225, height/2 - 100, 550, 231);}
+}
 
+// key pressed functions
 void keyPressed(){
   if (keyPressed) {
+    // press space to show next command
     if(key == ' '){
       fill(255);
       noStroke();
       rect(width/2 - 200, height/2 - 100, 400, 400);
-      //rand = int(random(strs.length));
       index++;
       kick.trigger(); // play beep sound
-      //println(index);
      }
   }
 }
